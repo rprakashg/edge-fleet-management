@@ -1,0 +1,5 @@
+ARG base
+
+FROM $base
+
+# Install Microshift RPMs
