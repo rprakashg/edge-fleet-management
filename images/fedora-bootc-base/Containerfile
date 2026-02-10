@@ -1,6 +1,5 @@
 FROM quay.io/fedora/fedora-bootc:43@sha256:d3e4bdec2ae93436922db83a29030a9dddfb15dea6ddb9d90a17381af25f43e4
 
-
 # Install FlightCTL agent
 ARG FLIGHTCTL_VERSION=1.0.2
 RUN dnf -y install dnf5-plugins && \
