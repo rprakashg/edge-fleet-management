@@ -6,7 +6,7 @@ on:
         branches:
         - main
         paths:
-        - images/*
+        - images/**
 
 env:
   IMAGE_TAGS: ${{ github.sha }}
