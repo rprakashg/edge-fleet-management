@@ -1,0 +1,12 @@
+ARG base
+
+FROM $base 
+
+# install cloud-init
+RUN dnf -y install cloud-init && \
+    ln -s ../cloud-init.target /usr/lib/systemd/system/default.target.wants && \
+    rm -rf /var/{cache,log} /var/lib/{dnf,rhsm}
+COPY --chmod=0644 10_bootc.cfg /etc/cloud/cloud.cfg.d
+COPY usr/ /usr/
+
+

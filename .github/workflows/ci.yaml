@@ -1,0 +1,50 @@
+---
+# CI for building images
+name: CI for building images
+on:
+    push:
+        branches:
+        - main
+        paths:
+        - images/*
+
+env:
+  IMAGE_TAGS: ${{ github.sha }}
+  IMAGE_REGISTRY: ghcr.io/${{ github.repository_owner }}
+  REGISTRY_USER: ${{ github.actor }}
+  REGISTRY_PASSWORD: ${{ github.token }}
+  
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        name: Build fedora base bootc image
+        steps:
+        - name: Checkout
+          uses: actions/checkout@v6
+        - name: Buildah build
+          id: build-image
+          uses: redhat-actions/buildah-build@v2
+          with:
+            image: fedora-bootc-base 
+            tags: |
+                latest
+                ${{ env.IMAGE_TAGS }}
+            context: images/fedora-bootc-base   
+            containerfiles: |
+                images/fedora-bootc-base/Containerfile
+        - name: Push image to registry
+          id: push-to-registry
+          uses: redhat-actions/push-to-registry@v2
+          with:
+            image: eventscheduler
+            tags: |
+                latest             
+                ${{ env.IMAGE_TAGS }}
+            registry: ${{ env.IMAGE_REGISTRY }}
+            username: ${{ env.REGISTRY_USER }}
+            password: ${{ env.REGISTRY_PASSWORD }}
+            extra-args: |
+                --disable-content-trust
+        outputs:
+            digest: ${{ steps.push-to-registry.outputs.digest }}  
+...
