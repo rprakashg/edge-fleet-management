@@ -34,4 +34,11 @@ microshift:
 	sudo podman push ${REGISTRY}/${BOOTC_MICROSHIFT_IMAGE}:${BOOTC_MICROSHIFT_IMAGE_TAG}
 .PHONY: cloudinit
 cloudinit:
+	podman build \
+		-t ${BOOTC_MICROSHIFT_IMAGE}:aws \
+		--build-arg base="${BOOTC_MICROSHIFT_IMAGE}:${BOOTC_MICROSHIFT_IMAGE_TAG}" \
+		-f images/cloud-init/Containerfile images/cloud-init
 
+	podman tag ${BOOTC_MICROSHIFT_IMAGE}:aws ${REGISTRY}/${BOOTC_MICROSHIFT_IMAGE}:aws
+
+	podman push ${REGISTRY}/${BOOTC_MICROSHIFT_IMAGE}:aws
