@@ -1,5 +1,56 @@
-ARG base
+ARG BASE_IMAGE
+ARG BASE_IMAGE_TAG
 
-FROM $base
+FROM $BASE_IMAGE:$BASE_IMAGE_TAG
 
-# Install Microshift RPMs
+ARG REPO_CONFIG_SCRIPT=/tmp/create_repos.sh
+ARG USHIFT_POSTINSTALL_SCRIPT=/tmp/postinstall.sh
+ARG USHIFT_EMBED_IMAGES_SCRIPT=/tmp/embed_images.sh
+
+RUN dnf -y install dnf5-plugins && \ 
+    dnf5 copr enable -y @microshift-io/microshift-nightly
+    
+COPY --chmod=755 ./scripts/create_repos.sh ${REPO_CONFIG_SCRIPT}
+RUN ${REPO_CONFIG_SCRIPT} -rhocp-mirror
+
+RUN dnf install -y microshift microshift-kindnet
+RUN ${REPO_CONFIG_SCRIPT} -delete && rm -vf ${REPO_CONFIG_SCRIPT}
+
+# Post-install MicroShift configuration
+COPY --chmod=755 ./scripts/postinstall.sh ${USHIFT_POSTINSTALL_SCRIPT}
+RUN ${USHIFT_POSTINSTALL_SCRIPT} && rm -vf "${USHIFT_POSTINSTALL_SCRIPT}"
+
+# If the EMBED_CONTAINER_IMAGES environment variable is set to 1, temporarily
+# configure user namespace UID and GID mappings. This allows the skopeo command
+# to operate without errors when copying the container images.
+COPY --chmod=755 ./scripts/embed_images.sh ${USHIFT_EMBED_IMAGES_SCRIPT}
+RUN if [ "${EMBED_CONTAINER_IMAGES}" = "1" ] ; then \
+        echo "root:100000:65536" > /etc/subuid && \
+        echo "root:100000:65536" > /etc/subgid && \
+        ${USHIFT_EMBED_IMAGES_SCRIPT} && rm -vf "${USHIFT_EMBED_IMAGES_SCRIPT}" && \
+        rm -vf /etc/subuid /etc/subgid ; \
+    fi
+
+# Create a systemd unit to recursively make the root filesystem subtree
+# shared as required by OVN images
+RUN cat > /etc/systemd/system/microshift-make-rshared.service <<'EOF'
+[Unit]
+Description=Make root filesystem shared
+Before=microshift.service
+ConditionVirtualization=container
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/mount --make-rshared /
+[Install]
+WantedBy=multi-user.target
+EOF
+RUN systemctl enable microshift-make-rshared.service
+
+# The /var directory is shared with the container as an anonymous volume to enable
+# idmap mounts under /var/lib/kubelet for containers using 'hostUsers: false'
+VOLUME ["/var"]
+
+# Disable the bootc-publish-rhsm-facts.service if it exists
+RUN if systemctl list-unit-files bootc-publish-rhsm-facts.service >/dev/null 2>&1 ; then \
+        systemctl disable bootc-publish-rhsm-facts.service ; \
+    fi

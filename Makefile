@@ -1,0 +1,37 @@
+# Options used in the 'rpm' target
+USHIFT_GITREF ?= main
+OKD_VERSION_TAG ?= $$(./images/fedora-bootc-microshift/scripts/get_version.sh latest-amd64)
+REGISTRY ?= quay.io/rprakashg
+BOOTC_BASE_IMAGE ?= fedora-bootc-base
+BOOTC_BASE_IMAGE_TAG ?= latest
+BOOTC_MICROSHIFT_IMAGE ?= fedora-bootc-microshift
+BOOTC_MICROSHIFT_IMAGE_TAG ?= latest
+
+.PHONY: base
+base:
+	podman build \
+		-t ${BOOTC_BASE_IMAGE}:${BOOTC_BASE_IMAGE_TAG} \
+		-f images/fedora-bootc-base/Containerfile images/fedora-bootc-base
+
+	podman tag ${BOOTC_BASE_IMAGE}:${BOOTC_BASE_IMAGE_TAG} ${REGISTRY}/${BOOTC_BASE_IMAGE}:${BOOTC_BASE_IMAGE_TAG}
+
+	podman push ${REGISTRY}/${BOOTC_BASE_IMAGE}:${BOOTC_BASE_IMAGE_TAG}
+
+.PHONY: microshift
+microshift:
+	sudo podman build \
+		-t ${BOOTC_MICROSHIFT_IMAGE}:${BOOTC_MICROSHIFT_IMAGE_TAG} \
+		--ulimit nofile=524288:524288 \
+		--label microshift.ref="${USHIFT_GITREF}" \
+		--label okd.version="${OKD_VERSION_TAG}" \
+		--build-arg BASE_IMAGE="${REGISTRY}/${BOOTC_BASE_IMAGE}" \
+		--build-arg BASE_IMAGE_TAG="${BOOTC_BASE_IMAGE_TAG}" \
+		--env EMBED_CONTAINER_IMAGES="0" \
+		-f images/fedora-bootc-microshift/Containerfile images/fedora-bootc-microshift
+
+	sudo podman tag ${BOOTC_MICROSHIFT_IMAGE}:${BOOTC_MICROSHIFT_IMAGE_TAG} ${REGISTRY}/${BOOTC_MICROSHIFT_IMAGE}:${BOOTC_MICROSHIFT_IMAGE_TAG}
+
+	sudo podman push ${REGISTRY}/${BOOTC_MICROSHIFT_IMAGE}:${BOOTC_MICROSHIFT_IMAGE_TAG}
+.PHONY: cloudinit
+cloudinit:
+
