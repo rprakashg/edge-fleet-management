@@ -34,6 +34,16 @@ microshift:
 	sudo podman push ${REGISTRY}/${BOOTC_MICROSHIFT_IMAGE}:${BOOTC_MICROSHIFT_IMAGE_TAG}
 .PHONY: cloudinit
 cloudinit:
+	echo "Overlaying cloud init on fedora bootc base image with flightctl agent"
+	podman build \
+		-t ${BOOTC_BASE_IMAGE}:aws \
+		--build-arg base="${BOOTC_BASE_IMAGE}:${BOOTC_BASE_IMAGE_TAG}" \
+		-f images/cloud-init/Containerfile images/cloud-init
+	
+	podman tag ${BOOTC_BASE_IMAGE}:aws ${REGISTRY}/${BOOTC_BASE_IMAGE}:aws
+	podman push ${REGISTRY}/${BOOTC_BASE_IMAGE}:aws
+
+	echo "Overlaying cloud init on fedora bootc image with flightctl agent and microshift"
 	podman build \
 		-t ${BOOTC_MICROSHIFT_IMAGE}:aws \
 		--build-arg base="${BOOTC_MICROSHIFT_IMAGE}:${BOOTC_MICROSHIFT_IMAGE_TAG}" \
@@ -42,3 +52,27 @@ cloudinit:
 	podman tag ${BOOTC_MICROSHIFT_IMAGE}:aws ${REGISTRY}/${BOOTC_MICROSHIFT_IMAGE}:aws
 
 	podman push ${REGISTRY}/${BOOTC_MICROSHIFT_IMAGE}:aws
+
+.PHONY: iso
+iso:
+	echo "Making iso using BiB"
+
+.PHONY: ami
+ami:
+	echo "Making AWS AMI using BiB"
+	sudo podman run \
+		--rm \
+		-it \
+		--privileged \
+		--pull=newer \
+		--security-opt label=type:unconfined_t \
+		-v ${HOME}/.aws:/root/.aws:ro \
+		-v /var/lib/containers/storage:/var/lib/containers/storage \
+		--env AWS_PROFILE=default \
+		quay.io/centos-bootc/bootc-image-builder:latest \
+		--type ami \
+		--rootfs xfs \
+		--aws-ami-name fedora-bootc-microshift-ami \
+		--aws-bucket bootc-images \
+		--aws-region us-west-2 \
+		${REGISTRY}/${BOOTC_MICROSHIFT_IMAGE}:aws

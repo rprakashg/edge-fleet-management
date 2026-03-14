@@ -1,0 +1,80 @@
+---
+# This playbook performs necessary configurations on AWS account to be able to build
+# AMI images for fedora bootc images
+- name: Configure AWS
+  hosts: localhost
+  gather_facts: yes
+  vars:
+    ami_bucket_name: "bootc-images"
+
+  tasks:
+  - name: Create AWS S3 bucket
+    amazon.aws.s3_bucket:
+      name: "{{ ami_bucket_name }}"
+
+  - name: Create VMImport Service Role
+    amazon.aws.iam_role:
+      name: vmimport
+      description: vmimport service role
+      assume_role_policy_document: '{
+        "Version": "2012-10-17",
+        "Statement": [
+            {
+                "Effect": "Allow",
+                "Principal": {
+                    "Service": "vmie.amazonaws.com"
+                },
+                "Action": "sts:AssumeRole",
+                "Condition": {
+                    "StringEquals": {
+                        "sts:Externalid": "vmimport"  
+                    }
+                }
+            }
+        ]}'
+
+  - name: Create Role Policy
+    amazon.aws.iam_policy:
+      policy_name: vmimport_service_role_policy
+      iam_type: role
+      iam_name: vmimport
+      policy_json: '{
+        "Version": "2012-10-17",
+        "Statement": [
+            {
+                "Effect": "Allow",
+                "Action":  [
+                    "s3:GetBucketLocation",
+                    "s3:GetObject",
+                    "s3:PutObject"
+                ],
+                "Resource": [
+                    "arn:aws:s3:::{{ ami_bucket_name }}",
+                    "arn:aws:s3:::{{ ami_bucket_name }}/*"
+                ]
+            },
+            {
+                "Effect": "Allow",
+                "Action": [
+                    "s3:GetBucketLocation",
+                    "s3:GetObject",
+                    "s3:ListBucket",
+                    "s3:PutObject",
+                    "s3:GetBucketAcl"
+                ],
+                "Resource": [
+                    "arn:aws:s3:::{{ ami_bucket_name }}",
+                    "arn:aws:s3:::{{ ami_bucket_name }}/*"
+                ]
+            },
+            {
+                "Effect": "Allow",
+                "Action": [
+                    "ec2:ModifySnapshotAttribute",
+                    "ec2:CopySnapshot",
+                    "ec2:RegisterImage",
+                    "ec2:Describe*"
+                ],
+                "Resource": "*"
+            }
+        ]}'
