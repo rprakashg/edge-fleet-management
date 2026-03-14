@@ -55,18 +55,18 @@ output "acm_certificate_arn" {
 }
 
 output "alb_arn" {
-  description = "ARN of the shared ALB"
-  value       = aws_lb.shared.arn
+  description = "ARN of the controller-managed ALB"
+  value       = data.aws_lb.ingress.arn
 }
 
 output "alb_dns_name" {
-  description = "DNS name of the shared ALB"
-  value       = aws_lb.shared.dns_name
+  description = "DNS name of the controller-managed ALB"
+  value       = data.aws_lb.ingress.dns_name
 }
 
 output "alb_zone_id" {
-  description = "Hosted zone ID of the shared ALB (for Route53 alias records)"
-  value       = aws_lb.shared.zone_id
+  description = "Hosted zone ID of the controller-managed ALB"
+  value       = data.aws_lb.ingress.zone_id
 }
 
 output "service_urls" {

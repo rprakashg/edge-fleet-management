@@ -1,23 +1,31 @@
 # ──────────────────────────────────────────────────────────
-# Route53 A alias records → shared ALB
+# Route53 A alias records → controller-managed ALB
 #
-# Because the ALB is pre-created by Terraform (not by the
-# LB controller), its DNS name is known immediately and no
-# timing workarounds are needed.
+# The ALB is created by the AWS Load Balancer Controller when
+# the Ingress (deploy/flightctl/ingress.yml) is applied.
+# The controller tags the ALB with ingress.k8s.aws/stack=<group.name>.
+# Apply the Ingress first, then run terraform apply to update DNS.
 # ──────────────────────────────────────────────────────────
 
 data "aws_route53_zone" "selected_zone" {
   name = var.domain_name
 }
 
+data "aws_lb" "ingress" {
+  tags = {
+    "ingress.k8s.aws/stack" = "edge-manager-alb"
+    "elbv2.k8s.aws/cluster" = var.cluster_name
+  }
+}
+
 resource "aws_route53_record" "flightctl" {
-  name = "flightctl"
+  name    = "flightctl"
   zone_id = data.aws_route53_zone.selected_zone.zone_id
   type    = "A"
 
   alias {
-    name                   = aws_lb.shared.dns_name
-    zone_id                = aws_lb.shared.zone_id
+    name                   = data.aws_lb.ingress.dns_name
+    zone_id                = data.aws_lb.ingress.zone_id
     evaluate_target_health = true
   }
 }
@@ -26,16 +34,16 @@ resource "aws_route53_record" "service" {
   for_each = local.services_map
 
   zone_id = data.aws_route53_zone.selected_zone.zone_id
-  
-  name    = each.value.host
-  type    = "A"
+
+  name = each.value.host
+  type = "A"
 
   alias {
-    name                   = aws_lb.shared.dns_name
-    zone_id                = aws_lb.shared.zone_id
+    name                   = data.aws_lb.ingress.dns_name
+    zone_id                = data.aws_lb.ingress.zone_id
     evaluate_target_health = true
   }
-  depends_on = [ 
-    aws_route53_record.flightctl 
+  depends_on = [
+    aws_route53_record.flightctl
   ]
 }

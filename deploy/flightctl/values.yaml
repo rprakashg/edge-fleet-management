@@ -18,7 +18,7 @@ global:
   # -- A separate Namespace to which non-user-facing components should be deployed for increased security isolation.
   internalNamespace: ""
   # -- Base domain to construct the FQDN for the service endpoints.
-  baseDomain: "sandbox3174.opentlc.com"
+  baseDomain: "flightctl.sandbox3174.opentlc.com"
   # -- Secret containing TLS ca/cert/key. It should be valid for *.${baseDomain}. This certificate is only used for non-mTLS endpoints, mTLS endpoints like agent-api, etc will use different certificates.
   baseDomainTlsSecretName: ""
   # -- Storage class name for the PVCs. Keep empty to use the default storage class.
@@ -142,7 +142,7 @@ db:
         # -- Memory resource requests for database pod
         memory: "512Mi" 
     # -- File system group ID for database pod security context
-    fsGroup: ""
+    fsGroup: "26"
     # -- Additional labels for DB PVCs.
     additionalPVCLabels: null
   external:

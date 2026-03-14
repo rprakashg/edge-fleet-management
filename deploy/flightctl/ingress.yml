@@ -1,0 +1,54 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: edgemanager-alb-ingress-ui
+  namespace: flightctl
+  annotations:
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS":443}]'
+    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:us-west-2:298468956706:certificate/0ffd0f48-955a-43bf-a578-d329a9374b1c
+    alb.ingress.kubernetes.io/group.name: edge-manager-alb
+    alb.ingress.kubernetes.io/backend-protocol: HTTP
+spec:
+  ingressClassName: alb
+  rules:
+    - host: ui.flightctl.sandbox3174.opentlc.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: flightctl-ui
+                port:
+                  number: 8080
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: edgemanager-alb-ingress-api
+  namespace: flightctl
+  annotations:
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS":443}]'
+    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:us-west-2:298468956706:certificate/0ffd0f48-955a-43bf-a578-d329a9374b1c
+    alb.ingress.kubernetes.io/group.name: edge-manager-alb
+    alb.ingress.kubernetes.io/backend-protocol: HTTPS
+spec:
+  ingressClassName: alb
+  rules:
+    - host: api.flightctl.sandbox3174.opentlc.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: flightctl-api
+                port:
+                  number: 3443
+---
