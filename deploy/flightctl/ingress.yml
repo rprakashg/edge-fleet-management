@@ -7,8 +7,8 @@ metadata:
     kubernetes.io/ingress.class: alb
     alb.ingress.kubernetes.io/scheme: internet-facing
     alb.ingress.kubernetes.io/target-type: ip
-    alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS":443}]'
-    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:us-west-2:298468956706:certificate/0ffd0f48-955a-43bf-a578-d329a9374b1c
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP":80}]' # '[{"HTTPS":443}]'
+    # alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:us-west-2:298468956706:certificate/0ffd0f48-955a-43bf-a578-d329a9374b1c
     alb.ingress.kubernetes.io/group.name: edge-manager-alb
     alb.ingress.kubernetes.io/backend-protocol: HTTP
 spec:
@@ -38,6 +38,8 @@ metadata:
     alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:us-west-2:298468956706:certificate/0ffd0f48-955a-43bf-a578-d329a9374b1c
     alb.ingress.kubernetes.io/group.name: edge-manager-alb
     alb.ingress.kubernetes.io/backend-protocol: HTTPS
+    alb.ingress.kubernetes.io/healthcheck-path: /healthz
+    alb.ingress.kubernetes.io/ssl-policy: ELBSecurityPolicy-TLS13-1-2-2021-06
 spec:
   ingressClassName: alb
   rules:
@@ -51,4 +53,4 @@ spec:
                 name: flightctl-api
                 port:
                   number: 3443
----
+...

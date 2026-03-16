@@ -6,6 +6,7 @@ BOOTC_BASE_IMAGE ?= fedora-bootc-base
 BOOTC_BASE_IMAGE_TAG ?= latest
 BOOTC_MICROSHIFT_IMAGE ?= fedora-bootc-microshift
 BOOTC_MICROSHIFT_IMAGE_TAG ?= latest
+EMBED_CONTAINER_IMAGES ?=0
 
 .PHONY: base
 base:
@@ -26,7 +27,7 @@ microshift:
 		--label okd.version="${OKD_VERSION_TAG}" \
 		--build-arg BASE_IMAGE="${REGISTRY}/${BOOTC_BASE_IMAGE}" \
 		--build-arg BASE_IMAGE_TAG="${BOOTC_BASE_IMAGE_TAG}" \
-		--env EMBED_CONTAINER_IMAGES="0" \
+		--env EMBED_CONTAINER_IMAGES="${EMBED_CONTAINER_IMAGES}" \
 		-f images/fedora-bootc-microshift/Containerfile images/fedora-bootc-microshift
 
 	sudo podman tag ${BOOTC_MICROSHIFT_IMAGE}:${BOOTC_MICROSHIFT_IMAGE_TAG} ${REGISTRY}/${BOOTC_MICROSHIFT_IMAGE}:${BOOTC_MICROSHIFT_IMAGE_TAG}

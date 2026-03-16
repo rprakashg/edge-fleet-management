@@ -1,0 +1,13 @@
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: flightctl-admin-role-crb
+roleRef:
+  kind: ClusterRole
+  name: flightctl-admin-flightctl
+  apiGroup: rbac.authorization.k8s.io
+subjects:
+- apiGroup: rbac.authorization.k8s.io
+  kind: User
+  name: ram@no-reply.com

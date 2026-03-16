@@ -60,6 +60,12 @@ aws eks update-kubeconfig --region us-west-2 --name edge-fleet-mgmt
 Install [flightctl](https://github.com/flightctl/flightctl) on EKS cluster. FlightCTL allows us to manage edge devices as fleet. Supports kubernetes style gitops based declarative management.
 
 ```sh
-
+helm install edge-manager --namespace flightctl  deploy/helm/flightctl -f $HOME/github.com/rprakashg/edge-fleet-management/deploy/flightctl/values.yaml
 ```
+
+### Login to flightctl service
+
+
+### Generate an Enrollment Certificate
+
 

@@ -30,7 +30,7 @@ global:
   auth:
     # -- Type of authentication to use. Allowed values: 'k8s', 'oidc', 'aap', 'openshift', 'oauth2', or 'none'.
     # When left empty (default and recommended), authentication type is auto-detected: 'openshift' on OpenShift clusters, 'k8s' otherwise.
-    type: "" # Auto-detect (openshift on OpenShift, k8s otherwise), or explicitly set: k8s, oidc, aap, openshift, oauth2, none
+    type: "oidc" # Auto-detect (openshift on OpenShift, k8s otherwise), or explicitly set: k8s, oidc, aap, openshift, oauth2, none
     # -- The custom CA cert.
     caCert: ""
     # -- True if verification of authority TLS cert should be skipped.
@@ -46,23 +46,23 @@ global:
       createAdminUser: true
     oidc:
       # -- OIDC Client ID
-      clientId: "flightctl-client"
+      clientId: "K3XNNdWpb8dbqm1fTbgM6umCw3qdxxK7"
       # -- The base URL for the OIDC provider that is reachable by flightctl services. Example: https://auth.foo.internal/realms/flightctl
-      issuer: ""
+      issuer: "https://flightctl.us.auth0.com/authorize"
       # -- The base URL for the OIDC provider that is reachable by clients. Example: https://auth.foo.net/realms/flightctl
-      externalOidcAuthority: ""
+      externalOidcAuthority: "https://flightctl.us.auth0.com/"
       # -- Organization assignment configuration
       organizationAssignment:
         type: "static"
         organizationName: "default"
       # -- Username claim to extract from OIDC token (default: "preferred_username")
       usernameClaim:
-        - "preferred_username"
+        - "name"
       # -- Role assignment configuration
       roleAssignment:
         type: "dynamic"
         claimPath:
-          - "groups"
+          - "https://flightctl.sandbox3174.opentlc.com/roles"
     aap:
       # -- The URL of the AAP Gateway API endpoint
       apiUrl: ""
@@ -297,58 +297,58 @@ alertmanagerProxy:
     pullPolicy: ""
   
 # -- ImageBuilder API Configuration
-#imageBuilderApi:
+imageBuilderApi:
   # -- Enable imagebuilder API service
-#  enabled: true
-#  image:
+  enabled: true
+  image:
     # -- ImageBuilder API container image
-#    image: quay.io/flightctl/flightctl-imagebuilder-api
+    image: quay.io/flightctl/flightctl-imagebuilder-api
     # -- ImageBuilder API image tag
-#    tag: ""
+    tag: ""
     # -- Image pull policy for ImageBuilder API container
-#    pullPolicy: ""
+    pullPolicy: ""
 
 # -- ImageBuilder Worker Configuration
-# imageBuilderWorker:
+imageBuilderWorker:
   # -- Enable imagebuilder worker service
-#  enabled: true
+  enabled: true
   # -- Number of worker replicas
-#  replicas: 1
-#  image:
+  replicas: 1
+  image:
     # -- ImageBuilder Worker container image
-#    image: quay.io/flightctl/flightctl-imagebuilder-worker
-#    # -- ImageBuilder Worker image tag
-#    tag: ""
-#    # -- Image pull policy for ImageBuilder Worker container
-#    pullPolicy: ""
+    image: quay.io/flightctl/flightctl-imagebuilder-worker
+    # -- ImageBuilder Worker image tag
+    tag: ""
+    # -- Image pull policy for ImageBuilder Worker container
+    pullPolicy: ""
   # -- Log level for the imagebuilder worker
-#  logLevel: info
+  logLevel: info
   # -- Maximum number of concurrent image builds
-#  maxConcurrentBuilds: 2
+  maxConcurrentBuilds: 2
   # -- Default TTL for image build resources
-#  defaultTTL: 168h
+  defaultTTL: 168h
   # -- Enable privileged mode for container-in-container builds
-#  privileged: true
+  privileged: true
   # -- Secret name containing yum repository configuration files, mounted at /etc/yum.repos.d
-#  yumReposSecretName: ""
+  yumReposSecretName: ""
   # -- Secret name containing RHEL subscription manager configuration, mounted at /etc/rhsm
-#  rhsmSecretName: ""
+  rhsmSecretName: ""
   # -- Secret name containing RHSM CA certificates, mounted at /etc/rhsm/ca
-#  rhsmCaSecretName: ""
+  rhsmCaSecretName: ""
   # -- Builder images (podman, bootc-image-builder) and skip-TLS options
-#  serviceImages:
-#    podman:
+  serviceImages:
+    podman:
       # -- Podman builder image (leave empty to use default).
-#      image: ""
+      image: ""
       # -- Set to true to skip TLS verification when pulling the Podman builder image.
-#      skipTlsVerify: false
-#    bootcImageBuilder:
+      skipTlsVerify: false
+    bootcImageBuilder:
       # -- bootc-image-builder image (leave empty to use default).
-#      image: ""
+      image: ""
       # -- Set to true to skip TLS verification when pulling the bootc-image-builder image.
-#      skipTlsVerify: false
+      skipTlsVerify: false
   # -- Resource requests and limits
-#  resources: {}
+  resources: {}
 
 telemetryGateway:
   image:
@@ -375,9 +375,25 @@ ui:
     pullPolicy: ""
   auth:
     # -- Set to true if auth TLS certificate validation should be skipped.
-    insecureSkipTlsVerify: false
+    insecureSkipTlsVerify: true
     # -- A custom CA cert for Auth TLS.
-    caCert: ""
+    caCert: |
+      -----BEGIN CERTIFICATE-----
+      MIICXTCCAgKgAwIBAgIUPRa8XARN7scXKEmkG+7Qv2GQOYowCgYIKoZIzj0EAwIw
+      FzEVMBMGA1UEAwwMZmxpZ2h0Y3RsLWNhMB4XDTI2MDMxNTAxNDIxMVoXDTI4MDMx
+      NDAxNDIxMVowGDEWMBQGA1UEAwwNZmxpZ2h0Y3RsLWFwaTBZMBMGByqGSM49AgEG
+      CCqGSM49AwEHA0IABPY6EZNaTanFHIUoOX3QU6sPHNJMsVEE1w/o7EzfgwCtrAxl
+      FQvq4xqWamTx7E/+HZk4mZH/nMoRmSyU0iN/Ul6jggEpMIIBJTAJBgNVHRMEAjAA
+      MA4GA1UdDwEB/wQEAwIFoDATBgNVHSUEDDAKBggrBgEFBQcDATCBsgYDVR0RBIGq
+      MIGngiVhcGkuZmxpZ2h0Y3RsLnNhbmRib3gzMTc0Lm9wZW50bGMuY29tgithZ2Vu
+      dC1hcGkuZmxpZ2h0Y3RsLnNhbmRib3gzMTc0Lm9wZW50bGMuY29tgg1mbGlnaHRj
+      dGwtYXBpghdmbGlnaHRjdGwtYXBpLmZsaWdodGN0bIIpZmxpZ2h0Y3RsLWFwaS5m
+      bGlnaHRjdGwuc3ZjLmNsdXN0ZXIubG9jYWwwHQYDVR0OBBYEFEPvKrhZkusKWUsx
+      9iEWhYSMWJW+MB8GA1UdIwQYMBaAFAKN5VyAymbmCVnq8+o7bSXcpi+4MAoGCCqG
+      SM49BAMCA0kAMEYCIQCYcvjoAFBBGVyLLD3Wl4BPD8V0vyUcwYtFQ7vLMfcWJAIh
+      AMFulQdpfNP8X/T26AGJ4seaB13VRu784J9+snF01mbT
+      -----END CERTIFICATE-----
+
   # -- Additional labels for UI routes.
   additionalRouteLabels: null
 
