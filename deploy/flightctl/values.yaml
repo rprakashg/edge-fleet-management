@@ -46,23 +46,23 @@ global:
       createAdminUser: true
     oidc:
       # -- OIDC Client ID
-      clientId: "K3XNNdWpb8dbqm1fTbgM6umCw3qdxxK7"
+      clientId: "bb67d66e-a76a-44b4-939f-db1f6a0b7192"
       # -- The base URL for the OIDC provider that is reachable by flightctl services. Example: https://auth.foo.internal/realms/flightctl
-      issuer: "https://flightctl.us.auth0.com/authorize"
+      issuer: "https://sso.flightctl.sandbox3174.opentlc.com/realms/flightctl"
       # -- The base URL for the OIDC provider that is reachable by clients. Example: https://auth.foo.net/realms/flightctl
-      externalOidcAuthority: "https://flightctl.us.auth0.com/"
+      externalOidcAuthority: "https://sso.flightctl.sandbox3174.opentlc.com/realms/flightctl"
       # -- Organization assignment configuration
       organizationAssignment:
         type: "static"
         organizationName: "default"
       # -- Username claim to extract from OIDC token (default: "preferred_username")
       usernameClaim:
-        - "name"
+        - "upm"
       # -- Role assignment configuration
       roleAssignment:
         type: "dynamic"
         claimPath:
-          - "https://flightctl.sandbox3174.opentlc.com/roles"
+          - "groups"
     aap:
       # -- The URL of the AAP Gateway API endpoint
       apiUrl: ""
@@ -142,7 +142,7 @@ db:
         # -- Memory resource requests for database pod
         memory: "512Mi" 
     # -- File system group ID for database pod security context
-    fsGroup: "26"
+    fsGroup: ""
     # -- Additional labels for DB PVCs.
     additionalPVCLabels: null
   external:
@@ -379,19 +379,19 @@ ui:
     # -- A custom CA cert for Auth TLS.
     caCert: |
       -----BEGIN CERTIFICATE-----
-      MIICXTCCAgKgAwIBAgIUPRa8XARN7scXKEmkG+7Qv2GQOYowCgYIKoZIzj0EAwIw
-      FzEVMBMGA1UEAwwMZmxpZ2h0Y3RsLWNhMB4XDTI2MDMxNTAxNDIxMVoXDTI4MDMx
-      NDAxNDIxMVowGDEWMBQGA1UEAwwNZmxpZ2h0Y3RsLWFwaTBZMBMGByqGSM49AgEG
-      CCqGSM49AwEHA0IABPY6EZNaTanFHIUoOX3QU6sPHNJMsVEE1w/o7EzfgwCtrAxl
-      FQvq4xqWamTx7E/+HZk4mZH/nMoRmSyU0iN/Ul6jggEpMIIBJTAJBgNVHRMEAjAA
+      MIICXTCCAgKgAwIBAgIUBDlgjn+xT/k8XkWR1JdDBquGOA0wCgYIKoZIzj0EAwIw
+      FzEVMBMGA1UEAwwMZmxpZ2h0Y3RsLWNhMB4XDTI2MDMxNzAwNTcyM1oXDTI4MDMx
+      NjAwNTcyM1owGDEWMBQGA1UEAwwNZmxpZ2h0Y3RsLWFwaTBZMBMGByqGSM49AgEG
+      CCqGSM49AwEHA0IABGqdnjAiM45wEXPoj/oWmD5ZPZWpRENw7Hy2ctVEm4j1C5na
+      4Y4LGaauXJMr6ECxdD2wI31cpGtT0n73ceeP+fejggEpMIIBJTAJBgNVHRMEAjAA
       MA4GA1UdDwEB/wQEAwIFoDATBgNVHSUEDDAKBggrBgEFBQcDATCBsgYDVR0RBIGq
       MIGngiVhcGkuZmxpZ2h0Y3RsLnNhbmRib3gzMTc0Lm9wZW50bGMuY29tgithZ2Vu
       dC1hcGkuZmxpZ2h0Y3RsLnNhbmRib3gzMTc0Lm9wZW50bGMuY29tgg1mbGlnaHRj
       dGwtYXBpghdmbGlnaHRjdGwtYXBpLmZsaWdodGN0bIIpZmxpZ2h0Y3RsLWFwaS5m
-      bGlnaHRjdGwuc3ZjLmNsdXN0ZXIubG9jYWwwHQYDVR0OBBYEFEPvKrhZkusKWUsx
-      9iEWhYSMWJW+MB8GA1UdIwQYMBaAFAKN5VyAymbmCVnq8+o7bSXcpi+4MAoGCCqG
-      SM49BAMCA0kAMEYCIQCYcvjoAFBBGVyLLD3Wl4BPD8V0vyUcwYtFQ7vLMfcWJAIh
-      AMFulQdpfNP8X/T26AGJ4seaB13VRu784J9+snF01mbT
+      bGlnaHRjdGwuc3ZjLmNsdXN0ZXIubG9jYWwwHQYDVR0OBBYEFMXAbHuXDCxWzbqj
+      pe5spIcMiQXUMB8GA1UdIwQYMBaAFCHoe2BJsDiKhQlITOXb4R3eCZnRMAoGCCqG
+      SM49BAMCA0kAMEYCIQCXGECz/jIkjS+fCy4vhSr+ElWtID/NQ4PCZEhny0d0pAIh
+      APpWf6w8AF/Zigmd3F1/Xd8anKpCFbPSqBZTR62xq3uz
       -----END CERTIFICATE-----
 
   # -- Additional labels for UI routes.

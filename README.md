@@ -63,6 +63,15 @@ Install [flightctl](https://github.com/flightctl/flightctl) on EKS cluster. Flig
 helm install edge-manager --namespace flightctl  deploy/helm/flightctl -f $HOME/github.com/rprakashg/edge-fleet-management/deploy/flightctl/values.yaml
 ```
 
+### Install Keycloak
+
+```sh
+kubectl create namespace keycloak
+
+kubectl apply -f keycloak.yaml -n keycloak
+
+```
+
 ### Login to flightctl service
 
 

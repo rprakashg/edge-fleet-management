@@ -1,0 +1,29 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: edgemanager-alb-ingress-sso
+  namespace: keycloak
+  annotations:
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS":443}]'
+    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:us-west-2:298468956706:certificate/0ffd0f48-955a-43bf-a578-d329a9374b1c
+    alb.ingress.kubernetes.io/group.name: edge-manager-alb
+    alb.ingress.kubernetes.io/backend-protocol: HTTP
+    alb.ingress.kubernetes.io/healthcheck-protocol: HTTP
+    alb.ingress.kubernetes.io/healthcheck-path: /health/live
+    alb.ingress.kubernetes.io/healthcheck-port: "9000"
+spec:
+  ingressClassName: alb
+  rules:
+    - host: sso.flightctl.sandbox3174.opentlc.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: keycloak
+                port:
+                  number: 8080
