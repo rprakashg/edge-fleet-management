@@ -31,14 +31,14 @@ spec:
               description: 'CPU load is >90% for more than 10 minutes'          
           samplingInterval: 30s
         - monitorType: Disk
-        samplingInterval: 5s
-        path: /
-        alertRules:
-        - severity: Warning
-          duration: 30m
-          percentage: 75
-          description: Disk space for application data is >75% full for over 30m.
-        - severity: Critical
-          duration: 10m
-          percentage: 90
-          description: Disk space for application data is >90% full over 10m.
+          samplingInterval: 5s
+          path: /
+          alertRules:
+          - severity: Warning
+            duration: 30m
+            percentage: 75
+            description: Disk space for application data is >75% full for over 30m.
+          - severity: Critical
+            duration: 10m
+            percentage: 90
+            description: Disk space for application data is >90% full over 10m.
