@@ -14,8 +14,8 @@ spec:
       
       config:
       - name: ai-codegenerator
-        gitref:
-          repository: 
+        gitRef:
+          repository: edge-fleet-management 
           targetRevision: main
           path: /apps/quadlets/ai-codegenerator/manifests
 
