@@ -9,7 +9,8 @@ spec:
   template:
     spec:
       # Operating system golden image that this fleet should be using
-      os: quay.io/rprakashg/fedora-bootc-microshift
+      os: 
+        image: quay.io/rprakashg/fedora-bootc-microshift
       
       config:
       - name: ai-codegenerator
