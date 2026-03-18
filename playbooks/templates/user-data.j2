@@ -1,0 +1,24 @@
+#cloud-config
+users:
+- name: "{{ admin_user }}"
+  ssh_authorized_keys:
+  - "{{ admin_user_ssh_pubkey }}"
+  groups: ["wheel"]
+  passwd: "{{ admin_user_password | password_hash('sha512') }}"
+  shell: /bin/bash
+  sudo: ['ALL=(ALL) NOPASSWD:ALL']
+
+ssh_pwauth: true
+chpasswd:
+  expire: false
+
+runcmd:
+- echo "Welcome to bootc on fedora" > /etc/motd
+
+write-files:
+- path: /etc/flightctl/config.yaml
+  permissions: '0755'
+  owner: root:root
+  content: |
+    {{ lookup('file', 'config.yaml') | indent(4) }}
+    

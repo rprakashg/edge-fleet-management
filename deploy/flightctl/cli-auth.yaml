@@ -1,0 +1,27 @@
+apiVersion: v1beta1
+kind: AuthProvider
+metadata:
+  name: flightctl-cli-auth-provider
+spec:
+  providerType: oidc
+  displayName: "Corporate OIDC"
+  issuer: "https://auth.example.com"
+  clientId: "874979da-2f06-4ab8-9112-2cfb58ce62cb"
+  #clientSecret: "your-client-secret"
+  enabled: true
+  scopes:
+  - openid
+  - profile
+  - email
+  - roles
+  - offline_access
+  usernameClaim:
+  - upn
+  organizationAssignment:
+    type: static
+    organizationName: default
+  roleAssignment:
+    type: dynamic
+    claimPath:
+    - groups
+    separator: ':'

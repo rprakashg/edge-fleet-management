@@ -47,6 +47,13 @@ global:
     oidc:
       # -- OIDC Client ID
       clientId: "bb67d66e-a76a-44b4-939f-db1f6a0b7192"
+      # -- List of OIDC scopes to request (e.g. openid, profile, email, roles, offline_access)
+      scopes:
+      - "openid"
+      - "profile"
+      - "email"
+      - "roles"
+      - "offline_access"
       # -- The base URL for the OIDC provider that is reachable by flightctl services. Example: https://auth.foo.internal/realms/flightctl
       issuer: "https://sso.flightctl.sandbox3174.opentlc.com/realms/flightctl"
       # -- The base URL for the OIDC provider that is reachable by clients. Example: https://auth.foo.net/realms/flightctl
@@ -142,7 +149,7 @@ db:
         # -- Memory resource requests for database pod
         memory: "512Mi" 
     # -- File system group ID for database pod security context
-    fsGroup: ""
+    fsGroup: "26"
     # -- Additional labels for DB PVCs.
     additionalPVCLabels: null
   external:
