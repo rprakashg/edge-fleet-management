@@ -60,6 +60,9 @@ iso:
 
 .PHONY: ami
 ami:
+	echo "First pulling bootc image down"
+	sudo podman pull ${REGISTRY}/${BOOTC_MICROSHIFT_IMAGE}:aws
+	
 	echo "Making AWS AMI using BiB"
 	sudo podman run \
 		--rm \
