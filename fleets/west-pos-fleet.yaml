@@ -1,0 +1,44 @@
+apiVersion: v1beta1
+kind: Fleet
+metadata:
+  name: west-pos-fleet
+spec:
+  selector:
+    matchLabels:
+      fleet: west-pos-fleet
+  template:
+    spec:
+      # Operating system golden image that this fleet should be using
+      os: quay.io/rprakashg/fedora-bootc-microshift
+      
+      config:
+      - name: ai-codegenerator
+        gitref:
+          repository: 
+          targetRevision: main
+          path: /apps/quadlets/ai-codegenerator/manifests
+
+      resources:
+        - monitorType: CPU
+          alertRules:
+            - severity: Warning
+              duration: 10m
+              percentage: 70
+              description: 'CPU load is >70% for more than 10 minutes'
+            - severity: Critical
+              duration: 10m
+              percentage: 90
+              description: 'CPU load is >90% for more than 10 minutes'          
+          samplingInterval: 30s
+        - monitorType: Disk
+        samplingInterval: 5s
+        path: /
+        alertRules:
+        - severity: Warning
+          duration: 30m
+          percentage: 75
+          description: Disk space for application data is >75% full for over 30m.
+        - severity: Critical
+          duration: 10m
+          percentage: 90
+          description: Disk space for application data is >90% full over 10m.

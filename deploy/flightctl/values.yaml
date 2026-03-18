@@ -34,7 +34,7 @@ global:
     # -- The custom CA cert.
     caCert: ""
     # -- True if verification of authority TLS cert should be skipped.
-    insecureSkipTlsVerify: false
+    insecureSkipTlsVerify: true
     k8s:
       # -- API URL of k8s cluster that will be used as authentication authority
       apiUrl: https://kubernetes.default.svc
@@ -57,7 +57,7 @@ global:
         organizationName: "default"
       # -- Username claim to extract from OIDC token (default: "preferred_username")
       usernameClaim:
-        - "upm"
+        - "upn"
       # -- Role assignment configuration
       roleAssignment:
         type: "dynamic"
