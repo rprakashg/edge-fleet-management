@@ -1,0 +1,16 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: ai-codegenerator-route
+  namespace: tools
+  labels:
+    app: ai-codegenerator
+spec:
+  to:
+    kind: Service
+    name: ai-codegenerator-service
+  port:
+    targetPort: ui
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect

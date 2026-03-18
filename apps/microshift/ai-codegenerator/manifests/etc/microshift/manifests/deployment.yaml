@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ai-codegenerator
+  namespace: tools
+  labels:
+    app: ai-codegenerator
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ai-codegenerator
+  template:
+    metadata:
+      labels:
+        app: ai-codegenerator
+    spec:
+      initContainers:
+      - name: model-file
+        image: quay.io/redhat-et/locallm-codellama-7b-gguf:latest
+        command: ['/usr/bin/install', "/model/codellama-7b-instruct.Q4_K_M.gguf", "/shared/"]
+        volumeMounts:
+        - name: model-file
+          mountPath: /shared
+      containers:
+      - name: codegen-inference
+        image: quay.io/redhat-et/locallm-codegen:latest
+        env:
+        - name: MODEL_SERVICE_ENDPOINT
+          value: http://localhost:8001/v1
+        ports:
+        - containerPort: 8501
+          protocol: TCP
+        securityContext:
+          runAsNonRoot: true
+      - name: codegen-model-service
+        image: quay.io/redhat-et/locallm-model-service:latest
+        env:
+        - name: HOST
+          value: "0.0.0.0"
+        - name: PORT
+          value: "8001"
+        - name: MODEL_PATH
+          value: /model/codellama-7b-instruct.Q4_K_M.gguf
+        ports:
+        - containerPort: 8001
+          protocol: TCP
+        securityContext:
+          runAsNonRoot: true
+        volumeMounts:
+        - name: model-file
+          mountPath: /model
+      volumes:
+      - name: model-file
+        emptyDir: {}
