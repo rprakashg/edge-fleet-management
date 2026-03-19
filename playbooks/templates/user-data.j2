@@ -11,11 +11,14 @@ users:
 ssh_pwauth: true
 chpasswd:
   expire: false
-
+          
 runcmd:
 - echo "Welcome to bootc on fedora" > /etc/motd
-- systemctl start microshift.service
-- systemctl start flightctl-agent.service
+- firewall-cmd --permanent --zone=trusted --add-source=10.42.0.0/16
+- firewall-cmd --permanent --zone=trusted --add-source=169.254.169.1
+- firewall-cmd --reload
+- systemctl enable --now microshift.service
+- systemctl enable --now flightctl-agent.service
 
 write_files:
 - path: /etc/flightctl/config.yaml
