@@ -2,11 +2,11 @@ ARG base
 
 FROM $base 
 
-# install cloud-init tools
-RUN dnf -y install cloud-init && \
+# Add cloud-init and open-vm-tools
+RUN dnf -y install cloud-init open-vm-tools \
+      --nodocs --setopt=install_weak_deps=False && \
+    dnf clean all && \
+    rm -rf /var/{cache,log} && \
     ln -s ../cloud-init.target /usr/lib/systemd/system/default.target.wants && \
-    rm -rf /var/{cache,log} /var/lib/{dnf,rhsm}
-COPY --chmod=0644 10-bootc.cfg /etc/cloud/cloud.cfg.d
-COPY usr/ /usr/
-
+    systemctl enable vmtoolsd.service
 

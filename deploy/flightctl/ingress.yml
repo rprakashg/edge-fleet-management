@@ -63,10 +63,15 @@ metadata:
     kubernetes.io/ingress.class: alb
     alb.ingress.kubernetes.io/scheme: internet-facing
     alb.ingress.kubernetes.io/target-type: ip
-    alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS":443}]'
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS": 443}]'
     alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:us-west-2:298468956706:certificate/0ffd0f48-955a-43bf-a578-d329a9374b1c
     alb.ingress.kubernetes.io/mutual-authentication: >
-      {"mode":"require","trustStoreArn":"arn:aws:elasticloadbalancing:us-west-2:298468956706:truststore/NAME/ID"}
+      [{
+        "mode": "verify",
+        "trustStoreArn": "arn:aws:elasticloadbalancing:us-west-2:298468956706:truststore/flightctl-trust-store/ad16b34067aa4405",
+        "ignoreClientCertificateExpiry": false,
+        "advertiseTrustStoreCaNames": "off"
+      }]
     alb.ingress.kubernetes.io/backend-protocol: HTTPS
     alb.ingress.kubernetes.io/healthcheck-path: /healthz
     alb.ingress.kubernetes.io/healthcheck-port: "3443"

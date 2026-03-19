@@ -61,9 +61,28 @@ iso:
 .PHONY: ami
 ami:
 	echo "First pulling bootc image down"
+	sudo podman pull ${REGISTRY}/${BOOTC_BASE_IMAGE}:aws
 	sudo podman pull ${REGISTRY}/${BOOTC_MICROSHIFT_IMAGE}:aws
-	
-	echo "Making AWS AMI using BiB"
+
+	echo "Making AWS AMI for bootc base image using BiB"
+	sudo podman run \
+		--rm \
+		-it \
+		--privileged \
+		--pull=newer \
+		--security-opt label=type:unconfined_t \
+		-v ${HOME}/.aws:/root/.aws:ro \
+		-v /var/lib/containers/storage:/var/lib/containers/storage \
+		--env AWS_PROFILE=default \
+		quay.io/centos-bootc/bootc-image-builder:latest \
+		--type ami \
+		--rootfs xfs \
+		--aws-ami-name fedora-bootc-microshift-ami \
+		--aws-bucket bootc-images \
+		--aws-region us-west-2 \
+		${REGISTRY}/${BOOTC_BASE_IMAGE}:aws
+
+	echo "Making AWS AMI for bootc microshift image using BiB"
 	sudo podman run \
 		--rm \
 		-it \
