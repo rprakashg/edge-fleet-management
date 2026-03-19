@@ -1,7 +1,10 @@
+# Provision a device with just the fedora base bootc image with 
+# flightctl agent
 instance_name: "device-01"
-ami: ami-0cdf2a7510288277c
+ami: ami-024b6630e47355bb6
 instance_type: t2.2xlarge
 key_name: id_rsa
 subnet_id: subnet-00a1b2b84b4e57c8d
 security_group_id: sg-08934d84d81d58ce3
 storage: 128
+microshift: false

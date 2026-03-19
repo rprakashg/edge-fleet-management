@@ -14,11 +14,13 @@ chpasswd:
           
 runcmd:
 - echo "Welcome to bootc on fedora" > /etc/motd
+- systemctl enable --now flightctl-agent.service
+{% if microshift %}
 - firewall-cmd --permanent --zone=trusted --add-source=10.42.0.0/16
 - firewall-cmd --permanent --zone=trusted --add-source=169.254.169.1
 - firewall-cmd --reload
 - systemctl enable --now microshift.service
-- systemctl enable --now flightctl-agent.service
+{% endif %}
 
 write_files:
 - path: /etc/flightctl/config.yaml
