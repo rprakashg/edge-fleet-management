@@ -23,5 +23,3 @@ RUN dnf -y install podman-compose \
     dnf clean all && \
     rm -rf /var/{cache,log} && \
     systemctl enable podman.service
-
-COPY 
