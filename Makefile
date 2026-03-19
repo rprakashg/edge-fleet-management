@@ -10,13 +10,13 @@ EMBED_CONTAINER_IMAGES ?=0
 
 .PHONY: base
 base:
-	podman build \
+	sudo podman build \
 		-t ${BOOTC_BASE_IMAGE}:${BOOTC_BASE_IMAGE_TAG} \
 		-f images/fedora-bootc-base/Containerfile images/fedora-bootc-base
 
-	podman tag ${BOOTC_BASE_IMAGE}:${BOOTC_BASE_IMAGE_TAG} ${REGISTRY}/${BOOTC_BASE_IMAGE}:${BOOTC_BASE_IMAGE_TAG}
+	sudo podman tag ${BOOTC_BASE_IMAGE}:${BOOTC_BASE_IMAGE_TAG} ${REGISTRY}/${BOOTC_BASE_IMAGE}:${BOOTC_BASE_IMAGE_TAG}
 
-	podman push ${REGISTRY}/${BOOTC_BASE_IMAGE}:${BOOTC_BASE_IMAGE_TAG}
+	sudo podman push ${REGISTRY}/${BOOTC_BASE_IMAGE}:${BOOTC_BASE_IMAGE_TAG}
 
 .PHONY: microshift
 microshift:
@@ -36,23 +36,23 @@ microshift:
 .PHONY: cloudinit
 cloudinit:
 	echo "Overlaying cloud init on fedora bootc base image with flightctl agent"
-	podman build \
+	sudo podman build \
 		-t ${BOOTC_BASE_IMAGE}:aws \
 		--build-arg base="${BOOTC_BASE_IMAGE}:${BOOTC_BASE_IMAGE_TAG}" \
 		-f images/cloud-init/Containerfile images/cloud-init
 	
-	podman tag ${BOOTC_BASE_IMAGE}:aws ${REGISTRY}/${BOOTC_BASE_IMAGE}:aws
-	podman push ${REGISTRY}/${BOOTC_BASE_IMAGE}:aws
+	sudo podman tag ${BOOTC_BASE_IMAGE}:aws ${REGISTRY}/${BOOTC_BASE_IMAGE}:aws
+	sudo podman push ${REGISTRY}/${BOOTC_BASE_IMAGE}:aws
 
 	echo "Overlaying cloud init on fedora bootc image with flightctl agent and microshift"
-	podman build \
+	sudo podman build \
 		-t ${BOOTC_MICROSHIFT_IMAGE}:aws \
 		--build-arg base="${BOOTC_MICROSHIFT_IMAGE}:${BOOTC_MICROSHIFT_IMAGE_TAG}" \
 		-f images/cloud-init/Containerfile images/cloud-init
 
-	podman tag ${BOOTC_MICROSHIFT_IMAGE}:aws ${REGISTRY}/${BOOTC_MICROSHIFT_IMAGE}:aws
+	sudo podman tag ${BOOTC_MICROSHIFT_IMAGE}:aws ${REGISTRY}/${BOOTC_MICROSHIFT_IMAGE}:aws
 
-	podman push ${REGISTRY}/${BOOTC_MICROSHIFT_IMAGE}:aws
+	sudo podman push ${REGISTRY}/${BOOTC_MICROSHIFT_IMAGE}:aws
 
 .PHONY: iso
 iso:
@@ -77,7 +77,7 @@ ami:
 		quay.io/centos-bootc/bootc-image-builder:latest \
 		--type ami \
 		--rootfs xfs \
-		--aws-ami-name fedora-bootc-microshift-ami \
+		--aws-ami-name fedora-bootc-base-ami \
 		--aws-bucket bootc-images \
 		--aws-region us-west-2 \
 		${REGISTRY}/${BOOTC_BASE_IMAGE}:aws
