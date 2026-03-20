@@ -1,7 +1,7 @@
 # Provision a device with fedora base bootc image + FlightCTL agent and 
 # Microshift
 instance_name: "device-02"
-ami: ami-0cdf2a7510288277c
+ami: ami-095da5e85c52da14c
 instance_type: t2.2xlarge
 key_name: id_rsa
 subnet_id: subnet-00a1b2b84b4e57c8d
