@@ -279,7 +279,7 @@ Store the vault password in an environment variable as shown below
 export VAULT_SECRET=<redacted>
 ```
 
-Run command below to provision devices. Repo has 2 ansible vars file for test devices we want to provision but you are free to provision as many as you like by just increasing the count in vars file. 
+Run command below to provision devices. Repo has 2 ansible vars file for test devices we want to provision but you are free to provision as many as you like by just increasing the `device_count` in vars file. 
 
 * [device-without-microshift](./playbooks/vars/device-without-microshift.yaml)
 * [device-with-microshift](./playbooks/vars/device-with-microshift.yaml)

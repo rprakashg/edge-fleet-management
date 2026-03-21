@@ -8,4 +8,4 @@ subnet_id: subnet-00a1b2b84b4e57c8d
 security_group_id: sg-08934d84d81d58ce3
 storage: 128
 microshift: true
-count: 1
+device_count: 1
