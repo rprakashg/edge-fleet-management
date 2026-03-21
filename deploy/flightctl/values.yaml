@@ -95,7 +95,7 @@ global:
       # -- Project label filter for OpenShift projects (leave empty to use default: io.flightctl/instance=<releaseName>)
       projectLabelFilter: ""
   # -- How the Flight Control services should be exposed. Can be either 'auto', 'route', 'gateway' (experimental) or 'none'
-  exposeServicesMethod: "auto"
+  exposeServicesMethod: "none"
   # -- Configuration for 'gateway' service exposure method
   gateway:
     # -- Gateway API class name for gateway exposure method
