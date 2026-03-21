@@ -231,7 +231,7 @@ Make sure ALB is successfully reconciled. You can check by running following com
 
 ```sh
 kubectl describe ing edgemanager-alb-ingress-api -n flightctl
-kubectl describe ing edgemanager-alb-ingress-api -n flightctl
+kubectl describe ing edgemanager-alb-ingress-ui -n flightctl
 ```
 
 ### Login to flightctl service
@@ -242,7 +242,7 @@ Ensure that you can login to flightctl service using the web interface. Once log
 First we need to define another application in keycloak for flightctl CLI. Be sure to use localhost for all authentication redirects. Login to flightctl web UI and define a new authentication provider to allow login from CLI. Now you are ready to login to flightctl from cli
 
 ```sh
-flightctl login https://api.flightctl.sandbox3174.opentlc.com --web -k --provider=flightctl-cli
+flightctl login https://api.flightctl.sandbox3174.opentlc.com --web --provider=flightctl-cli
 ```
 
 Browser will open where you will be prompted to authenticate with keycloak and after successful login, CLI will be setup to interact with flightctl service
@@ -279,7 +279,7 @@ Store the vault password in an environment variable as shown below
 export VAULT_SECRET=<redacted>
 ```
 
-Run command below to provision devices. Repo has 2 ansible vars file for test devices we want to provision but you are free to provision as many as you like by just increasing the `device_count` in vars file. 
+Run command below to provision devices. Repo has 2 ansible vars file for test devices we want to provision but you are free to provision as many as you like by just increasing the `device_count` in vars file. Additionally be sure to update the AMI and subnet and security group details in the Ansible vars file
 
 * [device-without-microshift](./playbooks/vars/device-without-microshift.yaml)
 * [device-with-microshift](./playbooks/vars/device-with-microshift.yaml)
