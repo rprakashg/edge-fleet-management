@@ -119,7 +119,7 @@ Next we need to create a client app in keycloak for `flightctl-ui` application. 
 
 ![ClientAuth](./media/clientapp-flightctl-ui-2.jpg)
 
-> Reason for this is that values file in Helmchart does not allow you to specify `ClientSecret` so when you 
+> Reason for this is that values file in Helmchart does not allow you to specify `ClientSecret` so after installing flightctl using helm chart and if you try to login it wouldn't work. Would like this to be enhanced to read client secret from a kubernetes secret.
 
 4. Configure claims for flightctl ui application by selecting the `Client scopes` tab and click on dedicated scope and mappers for this client as shown in screen capture below
 
