@@ -255,22 +255,46 @@ flightctl certificate request --signer=enrollment --expiration=365d --output=emb
 ```
 
 ### Provision devices
-In this section we will Provision our test devices, since this is a demo/test we are going to use EC2 instance and use the AMI we created earlier to demonstrate provisioning and enrollment into fleet. Playbook will generate cloud init user data file to dynamically inject the enrollment credentials as well as setups a local admin user to login to the devices. Run command below to provision 
+In this section we will Provision our test devices, since this is a demo/test we are going to use EC2 instance and use the AMI we created earlier to demonstrate provisioning and enrollment into fleet. Playbook will generate cloud init user data file to dynamically inject the enrollment credentials as well as setups a local admin user to login to the devices. You can find the jinja [template](./playbooks/templates/user-data.j2) that is used to generate the cloud config file. 
 
-Repo has 2 ansible vars file for test devices we want to provision. 
+Before you can provision test devices we need to setup ansible vault and include some secrets as shown in snippet below
 
-* [device-01](./playbooks/vars/device-01.yaml)
-* [device-02](./playbooks/vars/device-02.yaml)
+```yaml
+admin_user: <redacted>
+admin_user_password: <redacted>
+admin_user_ssh_pubkey: <redacted>
+key_name: <redacted>
+```
 
-Provision the first device (This device doesn't have microshift) Ideal for demonstrating running podman, legacy VM, RPM apps etc.
+You can create the ansible vault by running command below. When promted enter a password for vault.
 
 ```sh
-ansible-playbook --vault-password-file <(echo "$VAULT_SECRET") launch_instance.yaml -e @vars/device-01.yaml
+cd playbooks
+ansible-vault create vars/secrets.yaml
+```
+
+Store the vault password in an environment variable as shown below
+
+```sh
+export VAULT_SECRET=<redacted>
+```
+
+Run command below to provision devices. Repo has 2 ansible vars file for test devices we want to provision but you are free to provision as many as you like by just increasing the count in vars file. 
+
+* [device-without-microshift](./playbooks/vars/device-without-microshift.yaml)
+* [device-with-microshift](./playbooks/vars/device-with-microshift.yaml)
+
+Provision the devices using the image that doesn't contain Microshift bits. Ideal for demonstrating running podman, legacy VM, RPM apps etc.
+
+```sh
+ansible-playbook --vault-password-file <(echo "$VAULT_SECRET") launch_instance.yaml -e @vars/device-without-microshift.yaml
 ```
 
 Provision the second device, Image for this device include Microshift cluster and is ideal for demonstrating openshift/k8s application running on edge devices. 
 
 ```sh
-ansible-playbook --vault-password-file <(echo "$VAULT_SECRET") launch_instance.yaml -e @vars/device-02.yaml
+ansible-playbook --vault-password-file <(echo "$VAULT_SECRET") launch_instance.yaml -e @vars/device-with-microshift.yaml
 ```
 
+### Agent API Configurations
+TODO:

@@ -31,7 +31,7 @@
       network_interfaces:
       - assign_public_ip: true
       wait: true
-      count: 1
+      count: "{{ count }}"
       user_data: "{{ lookup('ansible.builtin.template', './templates/user-data.j2') }}"
       tags:
         Name: "{{ instance_name }}"
@@ -39,4 +39,5 @@
 
   - name: Print public dns
     ansible.builtin.debug:
-      var: ec2_instance.instances[0].public_dns_name
+      var: ec2_instance.instances[item].public_dns_name
+    loop: ec2_instance.instances
