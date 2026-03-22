@@ -86,6 +86,7 @@ variable "services" {
   }))
   default = [
      { name = "flightctl-api", port = 3443, host = "api.flightctl.sandbox3174.opentlc.com",     health_check_path = "/api/v1/health" },
-     { name = "flightctl-ui",  port = 8080, host = "ui.flightctl.sandbox3174.opentlc.com", health_check_path = "/"              },
+     { name = "flightctl-ui",  port = 8080, host = "ui.flightctl.sandbox3174.opentlc.com",     health_check_path = "/"              },
+     { name = "zipkin",         port = 9411, host = "zipkin.flightctl.sandbox3174.opentlc.com",  health_check_path = "/health"        },
    ]
 }
