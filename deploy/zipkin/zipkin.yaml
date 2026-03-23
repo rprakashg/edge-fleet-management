@@ -130,6 +130,10 @@ spec:
       labels:
         app: zipkin
     spec:
+      initContainers:
+        - name: wait-for-elasticsearch
+          image: busybox
+          command: ['sh', '-c', 'until wget -qO- http://elasticsearch:9200/_cluster/health; do echo waiting for elasticsearch; sleep 5; done']
       containers:
         - name: zipkin
           image: openzipkin/zipkin:3
