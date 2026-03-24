@@ -51,7 +51,7 @@ output "configure_kubectl" {
 
 output "acm_certificate_arn" {
   description = "ACM certificate ARN (wildcard for *.domain_name)"
-  value       = aws_acm_certificate_validation.this.certificate_arn
+  value       = aws_acm_certificate.this.arn
 }
 
 output "alb_arn" {

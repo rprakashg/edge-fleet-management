@@ -1,11 +1,52 @@
 # ──────────────────────────────────────────────────────────
-# ACM Certificate (wildcard) + Route53 DNS validation
+# AWS Private CA + exportable ACM Certificate (wildcard)
 # ──────────────────────────────────────────────────────────
 
+resource "aws_acmpca_certificate_authority" "this" {
+  type = "ROOT"
+
+  certificate_authority_configuration {
+    key_algorithm     = "RSA_2048"
+    signing_algorithm = "SHA256WITHRSA"
+
+    subject {
+      common_name  = var.domain_name
+      organization = var.cluster_name
+    }
+  }
+
+  permanent_deletion_time_in_days = 7
+
+  tags = merge(var.tags, {
+    Name = "${var.cluster_name}-private-ca"
+  })
+}
+
+# Self-signed root cert to activate the CA
+resource "aws_acmpca_certificate" "root" {
+  certificate_authority_arn   = aws_acmpca_certificate_authority.this.arn
+  certificate_signing_request = aws_acmpca_certificate_authority.this.certificate_signing_request
+  signing_algorithm           = "SHA256WITHRSA"
+  template_arn                = "arn:aws:acm-pca:::template/RootCACertificate/V1"
+
+  validity {
+    type  = "YEARS"
+    value = 10
+  }
+}
+
+resource "aws_acmpca_certificate_authority_certificate" "this" {
+  certificate_authority_arn = aws_acmpca_certificate_authority.this.arn
+  certificate               = aws_acmpca_certificate.root.certificate
+}
+
+# Exportable wildcard cert issued by the Private CA
 resource "aws_acm_certificate" "this" {
   domain_name               = var.domain_name
   subject_alternative_names = ["*.flightctl.${var.domain_name}"]
-  validation_method         = "DNS"
+  certificate_authority_arn = aws_acmpca_certificate_authority.this.arn
+
+  depends_on = [aws_acmpca_certificate_authority_certificate.this]
 
   lifecycle {
     create_before_destroy = true
@@ -14,26 +55,4 @@ resource "aws_acm_certificate" "this" {
   tags = merge(var.tags, {
     Name = "${var.cluster_name}-cert"
   })
-}
-
-resource "aws_route53_record" "cert_validation" {
-  for_each = {
-    for dvo in aws_acm_certificate.this.domain_validation_options : dvo.domain_name => {
-      name   = dvo.resource_record_name
-      record = dvo.resource_record_value
-      type   = dvo.resource_record_type
-    }
-  }
-
-  allow_overwrite = true
-  name            = each.value.name
-  records         = [each.value.record]
-  ttl             = 60
-  type            = each.value.type
-  zone_id         = data.aws_route53_zone.selected_zone.zone_id
-}
-
-resource "aws_acm_certificate_validation" "this" {
-  certificate_arn         = aws_acm_certificate.this.arn
-  validation_record_fqdns = [for r in aws_route53_record.cert_validation : r.fqdn]
 }
