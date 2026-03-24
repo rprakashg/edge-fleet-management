@@ -12,8 +12,7 @@ metadata:
     alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:us-west-2:298468956706:certificate/331dceba-82ea-4e97-a02d-e92ba260407e
     alb.ingress.kubernetes.io/mutual-authentication: >
       [{
-        "mode": "verify",
-        "trustStore": "arn:aws:acm:us-west-2:298468956706:certificate/331dceba-82ea-4e97-a02d-e92ba260407e",
+        "mode": "passthrough",
         "ignoreClientCertificateExpiry": false,
         "port": 443,
         "advertiseTrustStoreCaNames": "off"

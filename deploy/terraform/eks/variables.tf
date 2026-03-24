@@ -70,12 +70,6 @@ variable "domain_name" {
   default     = "sandbox3174.opentlc.com"
 }
 
-variable "mtls_ca_bundle_path" {
-  description = "Path to a PEM file containing CA certificate(s) that signed device client certs. When set, an S3 bucket and ALB trust store are created for mTLS on the agent-api listener."
-  type        = string
-  default     = null
-}
-
 variable "services" {
   description = "Services to expose externally via the shared ALB. Each entry creates a target group, HTTPS listener rule, and Route53 A record."
   type = list(object({
