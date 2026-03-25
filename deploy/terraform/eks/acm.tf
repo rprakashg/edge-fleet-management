@@ -11,14 +11,14 @@ resource "aws_acmpca_certificate_authority" "this" {
 
     subject {
       common_name  = var.domain_name
-      organization = var.cluster_name
+      organization = var.organization_name
     }
   }
 
   permanent_deletion_time_in_days = 7
 
   tags = merge(var.tags, {
-    Name = "${var.cluster_name}-private-ca"
+    Name = "${var.organization_name}-private-ca"
   })
 }
 
