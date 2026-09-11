@@ -68,7 +68,7 @@ kubectl apply -f keycloak.yaml -n keycloak
 ```
 
 ### Create Ingress for Keycloak
-To access keycloak from web browser we need to create an ALB ingress. Run command below to create an ALB ingress
+To access keycloak from web browser we need to create an ALB ingress. Run command below to create an ALB ingress. Be sure to update the certificate ARN in the ingress.yaml resource before running the command below
 
 ```sh
 kubectl apply -f deploy/keycloak/ingress.yaml
@@ -91,7 +91,7 @@ Follow steps below to create a keycloak realm for `flightctl`
 Next we will create some groups and test users for `flightctl`
 
 #### Create Groups
-Create 2 groups as shown below 
+Create 3 groups as shown below 
 
 * flightctl-admin
 * flightctl-operator

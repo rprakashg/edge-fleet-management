@@ -86,7 +86,8 @@ variable "services" {
   }))
   default = [
      { name = "flightctl-api", port = 3443, host = "api.flightctl.edgedemos.io" },
-     { name = "flightctl-ui",  port = 8080, host = "ui.flightctl.edgedemos.io"},
-     { name = "zipkin",         port = 9411, host = "zipkin.flightctl.edgedemos.io"},
+     { name = "flightctl-ui",  port = 8080, host = "ui.flightctl.edgedemos.io" },
+     { name = "zipkin",        port = 9411, host = "zipkin.flightctl.edgedemos.io" },
+     { name = "sso",           port = 9411, host = "sso.flightctl.edgedemos.io" },
    ]
 }

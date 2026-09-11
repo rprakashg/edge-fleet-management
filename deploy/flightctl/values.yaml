@@ -18,7 +18,7 @@ global:
   # -- A separate Namespace to which non-user-facing components should be deployed for increased security isolation.
   internalNamespace: ""
   # -- Base domain to construct the FQDN for the service endpoints.
-  baseDomain: "flightctl.sandbox3174.opentlc.com"
+  baseDomain: "flightctl.edgedemos.io"
   # -- Secret containing TLS ca/cert/key. It should be valid for *.${baseDomain}. This certificate is only used for non-mTLS endpoints, mTLS endpoints like agent-api, etc will use different certificates.
   baseDomainTlsSecretName: ""
   # -- Storage class name for the PVCs. Keep empty to use the default storage class.
@@ -55,9 +55,9 @@ global:
       - "roles"
       - "offline_access"
       # -- The base URL for the OIDC provider that is reachable by flightctl services. Example: https://auth.foo.internal/realms/flightctl
-      issuer: "https://sso.flightctl.sandbox3174.opentlc.com/realms/flightctl"
+      issuer: "https://sso.flightctl.edgedemos.io/realms/flightctl"
       # -- The base URL for the OIDC provider that is reachable by clients. Example: https://auth.foo.net/realms/flightctl
-      externalOidcAuthority: "https://sso.flightctl.sandbox3174.opentlc.com/realms/flightctl"
+      externalOidcAuthority: "https://sso.flightctl.edgedemos.io/realms/flightctl"
       # -- Organization assignment configuration
       organizationAssignment:
         type: "static"

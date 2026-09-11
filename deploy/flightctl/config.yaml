@@ -1,0 +1,91 @@
+database:
+    hostname: flightctl-db.flightctl.svc.cluster.local
+    type: "pgsql"
+    port: 5432
+    name: flightctl
+service:
+    address: :3443
+    agentEndpointAddress: :7443
+    httpReadTimeout: "5m"
+    httpReadHeaderTimeout: "5m"
+    httpWriteTimeout: "5m"
+    httpMaxNumHeaders: 32
+    httpMaxHeaderBytes: 33010
+    httpMaxUrlLength: 2000
+    httpMaxRequestSize: 53137200
+    baseUrl: https://api.flightctl.edgedemos.io/
+    baseAgentEndpointUrl: https://agent-api.flightctl.edgedemos.io/
+    baseUIUrl: http://ui.flightctl.edgedemos.io
+    altNames:
+      - api.flightctl.edgedemos.io
+      - agent-api.flightctl.edgedemos.io
+      - flightctl-api
+      - flightctl-api.flightctl
+      - flightctl-api.flightctl.svc.cluster.local
+    
+    tracing:
+        enabled: true
+        endpoint: http://zipkin.zipkin.svc.cluster.local:9411
+        insecure: false
+
+    rateLimit:
+        enabled: true
+        requests: 300
+        window: 1m
+        authRequests: 20
+        authWindow: 1h
+        trustedProxies:
+            - "10.0.0.0/8"
+            - "172.16.0.0/12"
+            - "192.168.0.0/16"
+    
+kv:
+    hostname: flightctl-kv.flightctl.svc.cluster.local
+    port: 6379
+
+auth:
+    insecureSkipTlsVerify: true
+    caCert: ""
+    oidc:
+        oidcAuthority: https://sso.flightctl.edgedemos.io/realms/flightctl
+        clientId: ca979146-f800-4fe1-bcd7-7aced40d30a9
+        issuer: https://sso.flightctl.edgedemos.io/realms/flightctl
+        externalOidcAuthority: https://sso.flightctl.edgedemos.io/realms/flightctl
+        scopes: 
+            - openid
+            - profile
+            - email
+            - roles
+            - offline_access
+        organizationAssignment: 
+            organizationName: default
+            type: static
+        usernameClaim: 
+            - upn
+        roleAssignment: 
+            claimPath:
+            - groups
+            type: dynamic
+organizations:
+    enabled: true
+metrics:
+    enabled: true
+    address: ":15690"
+    systemCollector:
+        enabled: true
+        tickerInterval: 5s
+    httpCollector:
+        enabled: true
+    deviceCollector:
+        enabled: true
+        tickerInterval: 30s
+        groupByFleet: true
+    fleetCollector:
+        enabled: true
+        tickerInterval: 30s
+    repositoryCollector:
+        enabled: true
+        tickerInterval: 30s
+    resourceSyncCollector:
+        enabled: true
+        tickerInterval: 30s

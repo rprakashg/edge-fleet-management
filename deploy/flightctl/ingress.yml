@@ -8,13 +8,13 @@ metadata:
     alb.ingress.kubernetes.io/scheme: internet-facing
     alb.ingress.kubernetes.io/target-type: ip
     alb.ingress.kubernetes.io/listen-ports: '[{"HTTP":80}]' # '[{"HTTPS":443}]'
-    # alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:us-west-2:298468956706:certificate/0ffd0f48-955a-43bf-a578-d329a9374b1c
+    #alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:ap-south-1:514314268914:certificate/a8401c07-72b4-42d7-a4a4-457e74a06ccd
     alb.ingress.kubernetes.io/group.name: edge-manager-alb
     alb.ingress.kubernetes.io/backend-protocol: HTTP
 spec:
   ingressClassName: alb
   rules:
-    - host: ui.flightctl.sandbox3174.opentlc.com
+    - host: ui.flightctl.edgedemos.io
       http:
         paths:
           - path: /
@@ -35,7 +35,7 @@ metadata:
     alb.ingress.kubernetes.io/scheme: internet-facing
     alb.ingress.kubernetes.io/target-type: ip
     alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS":443}]'
-    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:us-west-2:298468956706:certificate/331dceba-82ea-4e97-a02d-e92ba260407e
+    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:ap-south-1:514314268914:certificate/a8401c07-72b4-42d7-a4a4-457e74a06ccd
     alb.ingress.kubernetes.io/group.name: edge-manager-alb
     alb.ingress.kubernetes.io/backend-protocol: HTTPS
     alb.ingress.kubernetes.io/healthcheck-path: /healthz
@@ -43,7 +43,7 @@ metadata:
 spec:
   ingressClassName: alb
   rules:
-    - host: api.flightctl.sandbox3174.opentlc.com
+    - host: api.flightctl.edgedemos.io
       http:
         paths:
           - path: /
