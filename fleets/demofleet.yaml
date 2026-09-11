@@ -1,11 +1,11 @@
 apiVersion: v1beta1
 kind: Fleet
 metadata:
-  name: west-pos-fleet
+  name: demofleet
 spec:
   selector:
     matchLabels:
-      fleet: west-pos-fleet
+      fleet: demofleet
   template:
     spec:
       # Operating system golden image that this fleet should be using
