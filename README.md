@@ -297,4 +297,25 @@ ansible-playbook --vault-password-file <(echo "$VAULT_SECRET") launch_instance.y
 ```
 
 ### Agent API Configurations
-TODO:
+Device agents authenticate to the agent-facing API (`flightctl-api-agent:7443`) using mutual TLS: each device presents a client certificate issued by FlightCtl's own enrollment CA, and `flightctl-api` validates it directly (it mounts its own server cert and CA bundle and terminates TLS itself).
+
+Because that verification happens inside `flightctl-api`, this traffic **cannot** be routed through the shared ALB - an ALB terminates TLS before the backend ever sees the connection, so its mTLS "passthrough" mode only forwards the client cert as HTTP headers rather than preserving the handshake. Instead, the agent API is exposed through a dedicated Network Load Balancer doing raw TCP passthrough straight to the pod:
+
+```sh
+kubectl apply -f deploy/flightctl/agent-api-nlb-service.yml
+```
+
+Once the AWS Load Balancer Controller provisions the NLB, run Terraform again to create the `agent-api.flightctl.<domain>` Route53 alias record pointing at it:
+
+```sh
+terraform apply
+```
+
+Verify the NLB was created and DNS resolves:
+
+```sh
+kubectl get svc flightctl-api-agent-nlb -n flightctl
+dig agent-api.flightctl.sandbox3174.opentlc.com
+```
+
+Devices provisioned via the playbooks in this repo already receive their enrollment client cert/key and the FlightCtl CA bundle in `/etc/flightctl/config.yaml` (see "Generate an Enrollment Certificate" above), so no additional device-side configuration is needed once the NLB and DNS record are in place.

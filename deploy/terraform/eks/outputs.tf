@@ -54,27 +54,7 @@ output "acm_certificate_arn" {
   value       = aws_acm_certificate.this.arn
 }
 
-output "alb_arn" {
-  description = "ARN of the controller-managed ALB"
-  value       = data.aws_lb.ingress.arn
-}
-
-output "alb_dns_name" {
-  description = "DNS name of the controller-managed ALB"
-  value       = data.aws_lb.ingress.dns_name
-}
-
-output "alb_zone_id" {
-  description = "Hosted zone ID of the controller-managed ALB"
-  value       = data.aws_lb.ingress.zone_id
-}
-
 output "service_urls" {
   description = "HTTPS URLs for each exposed service"
   value       = { for k, s in local.services_map : k => "https://${s.host}" }
-}
-
-output "hosted_zone" {
-  description = "Route 53 hosted zone"
-  value       = data.aws_route53_zone.selected_zone.zone_id
 }

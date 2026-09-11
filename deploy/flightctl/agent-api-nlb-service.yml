@@ -1,0 +1,39 @@
+---
+# ──────────────────────────────────────────────────────────
+# Agent-facing API (flightctl-api-agent:7443) exposed via a
+# dedicated Network Load Balancer doing raw TCP passthrough.
+#
+# Device agents perform real mutual TLS against flightctl-api
+# itself (client cert issued by FlightCtl's enrollment CA,
+# validated by flightctl-api using its mounted ca-bundle.crt).
+# An ALB terminates TLS and cannot preserve that handshake, so
+# this traffic must NOT go through the shared ALB ingress -
+# it needs an L4 passthrough load balancer instead.
+#
+# Route53 record for agent-api.flightctl.<domain> is created by
+# Terraform (deploy/terraform/eks/agent-nlb.tf) once this Service
+# is applied and the NLB is provisioned.
+# ──────────────────────────────────────────────────────────
+apiVersion: v1
+kind: Service
+metadata:
+  name: flightctl-api-agent-nlb
+  namespace: flightctl
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-type: "external"
+    service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: "ip"
+    service.beta.kubernetes.io/aws-load-balancer-scheme: "internet-facing"
+    service.beta.kubernetes.io/aws-load-balancer-name: "edge-manager-agent-nlb"
+    service.beta.kubernetes.io/aws-load-balancer-healthcheck-protocol: "TCP"
+    service.beta.kubernetes.io/aws-load-balancer-healthcheck-port: "7443"
+spec:
+  type: LoadBalancer
+  selector:
+    flightctl.service: flightctl-api
+  ports:
+    - name: agent-api
+      protocol: TCP
+      port: 443
+      targetPort: 7443
+
+...

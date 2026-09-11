@@ -13,7 +13,7 @@ variable "cluster_name" {
 variable "region" {
   description = "AWS region"
   type        = string
-  default     = "us-west-2"
+  default     = "ap-south-1"
 }
 
 variable "kubernetes_version" {
@@ -37,7 +37,7 @@ variable "availability_zones" {
 variable "node_instance_types" {
   description = "EC2 instance types for the managed node group"
   type        = list(string)
-  default     = ["m5.xlarge"]
+  default     = ["t2.xlarge"]
 }
 
 variable "node_desired_size" {
@@ -73,7 +73,7 @@ variable "tags" {
 variable "domain_name" {
   description = "Base domain name managed in Route53 (e.g., example.com). A wildcard cert *.domain_name will be issued."
   type        = string
-  default     = "sandbox3174.opentlc.com"
+  default     = "edgedemos.io"
 }
 
 variable "services" {
@@ -85,8 +85,8 @@ variable "services" {
     health_check_path = optional(string, "/") # ALB health check path
   }))
   default = [
-     { name = "flightctl-api", port = 3443, host = "api.flightctl.sandbox3174.opentlc.com" },
-     { name = "flightctl-ui",  port = 8080, host = "ui.flightctl.sandbox3174.opentlc.com"},
-     { name = "zipkin",         port = 9411, host = "zipkin.flightctl.sandbox3174.opentlc.com"},
+     { name = "flightctl-api", port = 3443, host = "api.flightctl.edgedemos.io" },
+     { name = "flightctl-ui",  port = 8080, host = "ui.flightctl.edgedemos.io"},
+     { name = "zipkin",         port = 9411, host = "zipkin.flightctl.edgedemos.io"},
    ]
 }
