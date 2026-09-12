@@ -359,6 +359,17 @@ Provision the second device, Image for this device include Microshift cluster an
 ansible-playbook --vault-password-file <(echo "$VAULT_SECRET") launch_instance.yaml -e @vars/device-with-microshift.yaml
 ```
 
+### Verify login to FlightCTL UI
+We can verify that we can login to FlightCTL using the test users we created in FlightCTL
+
+Login as Ram, since Ram is an admin he should have full permissions to add/edit/delete resources
+
+![ram-view](./media/ram-view.png)
+
+Login as Kelly, since kelly has only viewer rights she should be able to view resources but not make any changes.
+
+![kelly-view](./media/kelly-view.png)
+
 ### Agent API Configurations
 Device agents authenticate to the agent-facing API (`flightctl-api-agent:7443`) using mutual TLS: each device presents a client certificate issued by FlightCtl's own enrollment CA, and `flightctl-api` validates it directly (it mounts its own server cert and CA bundle and terminates TLS itself).
 
