@@ -137,6 +137,10 @@ Next we need to create a client app in keycloak for `flightctl-ui` application. 
 
 ![configure mapper](./media/clientapp-flightctl-ui-6.jpg)
 
+Make sure you turn off the full group path as we only want the group name to flow into flightctl UI app as claim. See screen capture below
+
+![groupmembership](./media/group-membership.png)
+
 At this point we have successfully completed configuring a client application in keycloak for flightctl web application. We can now proceed to install flightctl with the helm chart.
 
 ### Install FlightCTL
@@ -145,7 +149,7 @@ This section will walk through how to install flightctl on EKS cluster using the
 Specify base domain and storage class under global section
 
 ```yaml
-baseDomain: "flightctl.sandbox3174.opentlc.com"
+baseDomain: "<replace with your basedomain>"
 storageClassName: "gp3"
 ```
 
@@ -171,7 +175,7 @@ auth:
       createAdminUser: true
     oidc:
       # -- OIDC Client ID
-      clientId: "bb67d66e-a76a-44b4-939f-db1f6a0b7192"
+      clientId: "<replace with clientid from keycloak>"
       # -- List of OIDC scopes to request (e.g. openid, profile, email, roles, offline_access)
       scopes:
       - "openid"
@@ -180,9 +184,9 @@ auth:
       - "roles"
       - "offline_access"
       # -- The base URL for the OIDC provider that is reachable by flightctl services. Example: https://auth.foo.internal/realms/flightctl
-      issuer: "https://sso.flightctl.sandbox3174.opentlc.com/realms/flightctl"
+      issuer: "<replace with your keycloak endpoint>/realms/flightctl"
       # -- The base URL for the OIDC provider that is reachable by clients. Example: https://auth.foo.net/realms/flightctl
-      externalOidcAuthority: "https://sso.flightctl.sandbox3174.opentlc.com/realms/flightctl"
+      externalOidcAuthority: "<replace with your keycloak endpoint>/realms/flightctl"
       # -- Organization assignment configuration
       organizationAssignment:
         type: "static"
@@ -234,18 +238,75 @@ kubectl describe ing edgemanager-alb-ingress-api -n flightctl
 kubectl describe ing edgemanager-alb-ingress-ui -n flightctl
 ```
 
+### Update config map
+Before we can login to flightctl UI we need to update the config map as auth section in helm values file doesn't allow specifying clientSecret and without clientSecret the oidc auth with keycloak is not going to work. I've included [config.yaml](./deploy/flightctl/config.yaml) in this repo, be sure to replace values to match your environment before running the command below.
+
+```sh
+ kubectl create configmap -n flightctl flightctl-api-config --from-file=./deploy/flightctl/config.yaml -o yaml --dry-run=client | kubectl apply -f -
+```
+
 ### Login to flightctl service
-Ensure that you can login to flightctl service using the web interface. Once logged in define a new repository and repository sync to sync fleet resources from git repo.
+Ensure that you can login to flightctl service using the web interface. 
 
 
 ### Setup flightctl CLI
-First we need to define another application in keycloak for flightctl CLI. Be sure to use localhost for all authentication redirects. Login to flightctl web UI and define a new authentication provider to allow login from CLI. Now you are ready to login to flightctl from cli
+First we need to define another application in keycloak for flightctl CLI. Follow steps covered in section above but be sure to use localhost for all authentication redirects. 
 
-```sh
-flightctl login https://api.flightctl.sandbox3174.opentlc.com --web --provider=flightctl-cli
+
+#### create a new authenctation provider
+Create a new authentication provider to login from `flightctl-cli`. 
+
+```yaml
+apiVersion: v1beta1
+kind: AuthProvider
+metadata:
+  name: flightctl-cli-auth-provider
+spec:
+  providerType: oidc
+  displayName: "FlightCTL CLI"
+  issuer: "<replace with keycloak endpoint>/realms/flightctl"
+  clientId: "<replace with client id from keycloak>"
+  clientSecret: "" # specify if Client Auth is turned on
+  enabled: true
+  scopes:
+    - openid
+    - profile
+    - email
+    - roles
+    - offline_access
+  usernameClaim:
+    - upn
+  organizationAssignment:
+    type: static
+    organizationName: default
+  roleAssignment:
+    type: dynamic
+    claimPath:
+      - groups
+    separator: ':'
 ```
 
-Browser will open where you will be prompted to authenticate with keycloak and after successful login, CLI will be setup to interact with flightctl service
+I've included [cli-auth.yaml](./deploy/flightctl/cli-auth.yaml) to speed things up rather than going through UI. Please replace values to match your environment.
+
+Before we can login to flightctl from cli we will need to modify the client application definition in keyclock to use localhost for all authentication redirects as shown in screen capture below
+
+![clientapp-update](./media/keycloak-update-for-cli-auth.png)
+
+```sh
+flightctl login <flightctl api server endpoint> --web
+```
+
+Browser will open where you will be prompted to authenticate with keycloak and after successful login, CLI will be setup to interact with flightctl service. Create a new authentication provider we will use to allow login from `flightctl-cli` by running command below
+
+```sh
+flightctl apply -f ./deploy/flightctl/cli-auth.yaml
+```
+
+Verify new auth provider is working for login from cli by running command below
+
+```sh
+flightctl login <flightctl api server endpoint> --web --provider flightctl-cli-auth-provider
+```
 
 ### Generate an Enrollment Certificate
 Generate an enrollment certificate to be injected into the device for flightctl agent to enroll the device with flightctl service. Run command below to generate an enrollment certificate for devices
@@ -305,17 +366,11 @@ Because that verification happens inside `flightctl-api`, this traffic **cannot*
 kubectl apply -f deploy/flightctl/agent-api-nlb-service.yml
 ```
 
-Once the AWS Load Balancer Controller provisions the NLB, run Terraform again to create the `agent-api.flightctl.<domain>` Route53 alias record pointing at it:
-
-```sh
-terraform apply
-```
-
 Verify the NLB was created and DNS resolves:
 
 ```sh
 kubectl get svc flightctl-api-agent-nlb -n flightctl
-dig agent-api.flightctl.sandbox3174.opentlc.com
+dig <replace with agent api endpoint>
 ```
 
 Devices provisioned via the playbooks in this repo already receive their enrollment client cert/key and the FlightCtl CA bundle in `/etc/flightctl/config.yaml` (see "Generate an Enrollment Certificate" above), so no additional device-side configuration is needed once the NLB and DNS record are in place.

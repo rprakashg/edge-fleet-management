@@ -4,24 +4,24 @@ metadata:
   name: flightctl-cli-auth-provider
 spec:
   providerType: oidc
-  displayName: "Corporate OIDC"
-  issuer: "https://auth.example.com"
+  displayName: "FlightCTL CLI"
+  issuer: "https://sso.flightctl.edgedemos.io/realms/flightctl"
   clientId: "874979da-2f06-4ab8-9112-2cfb58ce62cb"
-  #clientSecret: "your-client-secret"
+  clientSecret: ""
   enabled: true
   scopes:
-  - openid
-  - profile
-  - email
-  - roles
-  - offline_access
+    - openid
+    - profile
+    - email
+    - roles
+    - offline_access
   usernameClaim:
-  - upn
+    - upn
   organizationAssignment:
     type: static
     organizationName: default
   roleAssignment:
     type: dynamic
     claimPath:
-    - groups
+      - groups
     separator: ':'
