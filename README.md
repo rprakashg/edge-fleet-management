@@ -308,6 +308,8 @@ Verify new auth provider is working for login from cli by running command below
 flightctl login <flightctl api server endpoint> --web --provider flightctl-cli-auth-provider
 ```
 
+At this point `flightctl-cli` is setup to auth using the new client app. We can now go back and revert the redirect url update we made to allow login from web UI work correctly.
+
 ### Generate an Enrollment Certificate
 Generate an enrollment certificate to be injected into the device for flightctl agent to enroll the device with flightctl service. Run command below to generate an enrollment certificate for devices
 
