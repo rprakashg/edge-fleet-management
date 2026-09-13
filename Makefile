@@ -10,17 +10,19 @@ EMBED_CONTAINER_IMAGES ?=0
 
 .PHONY: base
 base:
-	sudo podman build \
+	podman build \
+		--arch amd64 \
 		-t ${BOOTC_BASE_IMAGE}:${BOOTC_BASE_IMAGE_TAG} \
 		-f images/fedora-bootc-base/Containerfile images/fedora-bootc-base
 
-	sudo podman tag ${BOOTC_BASE_IMAGE}:${BOOTC_BASE_IMAGE_TAG} ${REGISTRY}/${BOOTC_BASE_IMAGE}:${BOOTC_BASE_IMAGE_TAG}
+	podman tag ${BOOTC_BASE_IMAGE}:${BOOTC_BASE_IMAGE_TAG} ${REGISTRY}/${BOOTC_BASE_IMAGE}:${BOOTC_BASE_IMAGE_TAG}
 
-	sudo podman push ${REGISTRY}/${BOOTC_BASE_IMAGE}:${BOOTC_BASE_IMAGE_TAG}
+	podman push ${REGISTRY}/${BOOTC_BASE_IMAGE}:${BOOTC_BASE_IMAGE_TAG}
 
 .PHONY: microshift
 microshift:
-	sudo podman build \
+	podman build \
+		--arch amd64 \
 		-t ${BOOTC_MICROSHIFT_IMAGE}:${BOOTC_MICROSHIFT_IMAGE_TAG} \
 		--ulimit nofile=524288:524288 \
 		--label microshift.ref="${USHIFT_GITREF}" \
@@ -30,33 +32,36 @@ microshift:
 		--env EMBED_CONTAINER_IMAGES="${EMBED_CONTAINER_IMAGES}" \
 		-f images/fedora-bootc-microshift/Containerfile images/fedora-bootc-microshift
 
-	sudo podman tag ${BOOTC_MICROSHIFT_IMAGE}:${BOOTC_MICROSHIFT_IMAGE_TAG} ${REGISTRY}/${BOOTC_MICROSHIFT_IMAGE}:${BOOTC_MICROSHIFT_IMAGE_TAG}
+	podman tag ${BOOTC_MICROSHIFT_IMAGE}:${BOOTC_MICROSHIFT_IMAGE_TAG} ${REGISTRY}/${BOOTC_MICROSHIFT_IMAGE}:${BOOTC_MICROSHIFT_IMAGE_TAG}
 
-	sudo podman push ${REGISTRY}/${BOOTC_MICROSHIFT_IMAGE}:${BOOTC_MICROSHIFT_IMAGE_TAG}
+	podman push ${REGISTRY}/${BOOTC_MICROSHIFT_IMAGE}:${BOOTC_MICROSHIFT_IMAGE_TAG}
+
 .PHONY: cloudinit
 cloudinit:
 	echo "Overlaying cloud init on fedora bootc base image with flightctl agent"
-	sudo podman build \
+	podman build \
+		--arch amd64 \
 		-t ${BOOTC_BASE_IMAGE}:aws \
 		--build-arg base="${BOOTC_BASE_IMAGE}:${BOOTC_BASE_IMAGE_TAG}" \
 		-f images/cloud-init/Containerfile images/cloud-init
 	
-	sudo podman tag ${BOOTC_BASE_IMAGE}:aws ${REGISTRY}/${BOOTC_BASE_IMAGE}:aws
-	sudo podman push ${REGISTRY}/${BOOTC_BASE_IMAGE}:aws
+	podman tag ${BOOTC_BASE_IMAGE}:aws ${REGISTRY}/${BOOTC_BASE_IMAGE}:aws
+	podman push ${REGISTRY}/${BOOTC_BASE_IMAGE}:aws
 
-	echo "Overlaying cloud init on fedora bootc image with flightctl agent and microshift"
-	sudo podman build \
-		-t ${BOOTC_MICROSHIFT_IMAGE}:aws \
-		--build-arg base="${BOOTC_MICROSHIFT_IMAGE}:${BOOTC_MICROSHIFT_IMAGE_TAG}" \
-		-f images/cloud-init/Containerfile images/cloud-init
+	#echo "Overlaying cloud init on fedora bootc image with flightctl agent and microshift"
+	# podman build \
+	#	--arch amd64 \
+	#	-t ${BOOTC_MICROSHIFT_IMAGE}:aws \
+	#	--build-arg base="${BOOTC_MICROSHIFT_IMAGE}:${BOOTC_MICROSHIFT_IMAGE_TAG}" \
+	#	-f images/cloud-init/Containerfile images/cloud-init
 
-	sudo podman tag ${BOOTC_MICROSHIFT_IMAGE}:aws ${REGISTRY}/${BOOTC_MICROSHIFT_IMAGE}:aws
+	#podman tag ${BOOTC_MICROSHIFT_IMAGE}:aws ${REGISTRY}/${BOOTC_MICROSHIFT_IMAGE}:aws
 
-	sudo podman push ${REGISTRY}/${BOOTC_MICROSHIFT_IMAGE}:aws
+	#podman push ${REGISTRY}/${BOOTC_MICROSHIFT_IMAGE}:aws
 
 .PHONY: iso
 iso:
-	echo "Making iso using BiB"
+	echo "Making iso using BiB - Not Implemented"
 
 .PHONY: ami
 ami:
