@@ -82,9 +82,9 @@ ami:
 		quay.io/centos-bootc/bootc-image-builder:latest \
 		--type ami \
 		--rootfs xfs \
-		--aws-ami-name fedora-bootc-base-ami \
+		--aws-ami-name fedora-bootc-base \
 		--aws-bucket bootc-images \
-		--aws-region us-west-2 \
+		--aws-region $AWS_DEFAULT_REGION \
 		${REGISTRY}/${BOOTC_BASE_IMAGE}:aws
 
 	echo "Making AWS AMI for bootc microshift image using BiB"
