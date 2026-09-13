@@ -84,7 +84,7 @@ ami:
 		--rootfs xfs \
 		--aws-ami-name fedora-bootc-base \
 		--aws-bucket bootc-images \
-		--aws-region $AWS_DEFAULT_REGION \
+		--aws-region ${AWS_DEFAULT_REGION} \
 		${REGISTRY}/${BOOTC_BASE_IMAGE}:aws
 
 	echo "Making AWS AMI for bootc microshift image using BiB"
