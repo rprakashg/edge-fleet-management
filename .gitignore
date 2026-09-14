@@ -1,5 +1,5 @@
 **/.DS_Store
-#**/config.yaml
+playbooks/config.yaml
 **/*.crt
 **/*.key
 
