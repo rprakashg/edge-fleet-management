@@ -7,10 +7,6 @@ users:
   passwd: "{{ admin_user_password | password_hash('sha512') }}"
   shell: /bin/bash
   sudo: ['ALL=(ALL) NOPASSWD:ALL']
-
-ssh_pwauth: true
-chpasswd:
-  expire: false
           
 runcmd:
 - echo "Welcome to bootc on fedora" > /etc/motd

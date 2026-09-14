@@ -19,7 +19,7 @@ variable "region" {
 variable "kubernetes_version" {
   description = "Kubernetes version for the EKS cluster"
   type        = string
-  default     = "1.32"
+  default     = "1.34"
 }
 
 variable "vpc_cidr" {
@@ -43,7 +43,7 @@ variable "node_instance_types" {
 variable "node_desired_size" {
   description = "Desired number of nodes in the managed node group"
   type        = number
-  default     = 3
+  default     = 1
 }
 
 variable "node_min_size" {
@@ -55,7 +55,7 @@ variable "node_min_size" {
 variable "node_max_size" {
   description = "Maximum number of nodes in the managed node group"
   type        = number
-  default     = 6
+  default     = 2
 }
 
 variable "node_disk_size" {

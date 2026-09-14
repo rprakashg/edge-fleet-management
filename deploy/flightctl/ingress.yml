@@ -35,7 +35,7 @@ metadata:
     alb.ingress.kubernetes.io/scheme: internet-facing
     alb.ingress.kubernetes.io/target-type: ip
     alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS":443}]'
-    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:ap-south-1:514314268914:certificate/a8401c07-72b4-42d7-a4a4-457e74a06ccd
+    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:ap-south-1:514314268914:certificate/c4595170-4d71-4a87-ab34-f3642bad2568
     alb.ingress.kubernetes.io/group.name: edge-manager-alb
     alb.ingress.kubernetes.io/backend-protocol: HTTPS
     alb.ingress.kubernetes.io/healthcheck-path: /healthz
