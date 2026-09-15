@@ -7,8 +7,8 @@ users:
   passwd: "{{ admin_user_password | password_hash('sha512') }}"
   shell: /bin/bash
   sudo: ['ALL=(ALL) NOPASSWD:ALL']
-          
+
 runcmd:
-- echo "This device was successfully onboarded to FlightCTL using FIDO Device onboarding" > /etc/motd
-- systemctl enable --now flightctl-agent.service
+- echo "Welcome to FIDO Device" > /etc/motd
 - go-fdo-client device-init '{{ manufacturing_server }}' --device-info '{{ instance_name }}' --key ec256 --blob /tmp/cred.bin
+
