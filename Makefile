@@ -69,8 +69,7 @@ iso:
 ami:
 	echo "First pulling bootc image down"
 	sudo podman pull ${REGISTRY}/${BOOTC_BASE_IMAGE}:aws
-	export IMAGE_DIGEST=$(podman inspect --format '{{.Digest}}' ${REGISTRY}/${BOOTC_BASE_IMAGE}:aws)
-
+	
 	echo "Making AWS AMI for bootc base image using BiB"
 	sudo podman run \
 		--rm \
@@ -87,4 +86,4 @@ ami:
 		--aws-ami-name ${AMI_NAME} \
 		--aws-bucket ${BUCKET_NAME} \
 		--aws-region ${AWS_REGION} \
-		${REGISTRY}/${BOOTC_BASE_IMAGE}@{IMAGE_DIGEST}
+		${REGISTRY}/${BOOTC_BASE_IMAGE}:aws
