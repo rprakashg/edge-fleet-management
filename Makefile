@@ -61,15 +61,6 @@ fido-device:
 	echo "Tagging and pushing image to registry"
 	podman tag fido-device:latest ${REGISTRY}/fido-device:latest
 	podman push ${REGISTRY}/fido-device:latest
-
-	echo "Overlaying cloud-init"
-	podman build \
-		--arch amd64 \
-		-t ${REGISTRY}/fido-device:aws \
-		--build-arg base=${REGISTRY}/fido-device:latest \
-		-f images/cloud-init/Containerfile images/cloud-init
-	podman push ${REGISTRY}/fido-device:aws
-
 .PHONY: iso
 iso:
 	echo "Making iso using BiB - Not Implemented"
@@ -96,4 +87,4 @@ ami:
 		--aws-ami-name ${AMI_NAME} \
 		--aws-bucket ${BUCKET_NAME} \
 		--aws-region ${AWS_REGION} \
-		${REGISTRY}/${BOOTC_BASE_IMAGE}:aws
+		${REGISTRY}/${BOOTC_BASE_IMAGE}@{IMAGE_DIGEST}
