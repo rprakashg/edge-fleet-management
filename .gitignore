@@ -2,6 +2,8 @@
 playbooks/config.yaml
 **/*.crt
 **/*.key
+playbooks/ca*
+playbooks/client-*
 
 # Terraform
 **/.terraform/

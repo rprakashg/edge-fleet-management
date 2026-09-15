@@ -41,7 +41,7 @@ cloudinit:
 	echo "Overlaying cloud init on fedora bootc base image with flightctl agent"
 	podman build \
 		--arch amd64 \
-		-t ${BOOTC_BASE_IMAGE}:aws \
+		-t ${REGISTRY}/${BOOTC_BASE_IMAGE}:aws \
 		--build-arg base="${REGISTRY}/${BOOTC_BASE_IMAGE}:${BOOTC_BASE_IMAGE_TAG}" \
 		-f images/cloud-init/Containerfile images/cloud-init
 	podman push ${REGISTRY}/${BOOTC_BASE_IMAGE}:aws
@@ -54,6 +54,27 @@ cloudinit:
 	#	-f images/cloud-init/Containerfile images/cloud-init
 
 	#podman push ${REGISTRY}/${BOOTC_MICROSHIFT_IMAGE}:aws
+
+.PHONY: fido-device
+fido-device:
+	echo "Building fido device"
+	podman build \
+		--arch amd64 \
+		-t fido-device:latest \
+		--build-arg FROM=${REGISTRY}/${BOOTC_BASE_IMAGE}:${BOOTC_BASE_IMAGE_TAG} \
+		-f images/fido-device/Containerfile images/fido-device
+	
+	echo "Tagging and pushing image to registry"
+	podman tag fido-device:latest ${REGISTRY}/fido-device:latest
+	podman push ${REGISTRY}/fido-device:latest
+
+	echo "Overlaying cloud-init"
+	podman build \
+		--arch amd64 \
+		-t ${REGISTRY}/fido-device:aws \
+		--build-arg base=${REGISTRY}/fido-device:latest \
+		-f images/cloud-init/Containerfile images/cloud-init
+	podman push ${REGISTRY}/fido-device:aws
 
 .PHONY: iso
 iso:
