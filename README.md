@@ -364,7 +364,7 @@ make base REGISTRY=<specify>
 Overlay bootc image with cloudinit
 
 ```sh
-make cloudinit
+make cloudinit BOOTC_BASE_IMAGE=fedora-bootc-base
 ```
 
 ### Build AMI
@@ -379,7 +379,7 @@ ansible-playbook --vault-password-file <(echo "$VAULT_SECRET") configure_aws.yml
 Run command below to make AMI
 
 ```sh
-make ami
+make ami AMI_NAME=fedora-bootc-base
 ```
 
 ### Launch EC2 instance using the AMI
@@ -457,3 +457,19 @@ Once the EC2 instance is ready you can see a pending enrollment request in Fligh
 ![pending-device-enrollment](./media/device-pending-enrollment.png)
 
 ### FDO
+Create a base OS image with fdo client
+
+```sh
+make fido-device
+```
+Overlay cloud-init packages
+
+```sh
+make cloud-init BOOTC_BASE_IMAGE=fido-device
+```
+
+Build AMI
+
+```sh
+make ami AMI_NAME=fido-device BOOTC_BASE_IMAGE=fido-device
+```

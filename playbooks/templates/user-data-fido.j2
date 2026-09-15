@@ -1,0 +1,14 @@
+#cloud-config
+users:
+- name: "{{ admin_user }}"
+  ssh_authorized_keys:
+  - "{{ admin_user_ssh_pubkey }}"
+  groups: ["wheel"]
+  passwd: "{{ admin_user_password | password_hash('sha512') }}"
+  shell: /bin/bash
+  sudo: ['ALL=(ALL) NOPASSWD:ALL']
+          
+runcmd:
+- echo "This device was successfully onboarded to FlightCTL using FIDO Device onboarding" > /etc/motd
+- systemctl enable --now flightctl-agent.service
+- go-fdo-client device-init '{{ manufacturing_server }}' --device-info '{{ instance_name }}' --key ec256 --blob /tmp/cred.bin

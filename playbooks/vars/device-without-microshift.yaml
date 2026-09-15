@@ -8,3 +8,4 @@ security_group_id: sg-033428bf5df380f8b
 storage: 128
 microshift: false
 device_count: 1
+user_data_template: ./templates/user-data.j2

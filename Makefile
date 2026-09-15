@@ -7,6 +7,9 @@ BOOTC_BASE_IMAGE_TAG ?= latest
 BOOTC_MICROSHIFT_IMAGE ?= fedora-bootc-microshift
 BOOTC_MICROSHIFT_IMAGE_TAG ?= latest
 EMBED_CONTAINER_IMAGES ?=0
+AMI_NAME ?=bootc-device-base
+BUCKET_NAME ?=bootc-amis-demo
+AWS_REGION ?=ap-south-1
 
 .PHONY: base
 base:
@@ -38,7 +41,7 @@ microshift:
 
 .PHONY: cloudinit
 cloudinit:
-	echo "Overlaying cloud init on fedora bootc base image with flightctl agent"
+	echo "Overlaying cloud init packages"
 	podman build \
 		--arch amd64 \
 		-t ${REGISTRY}/${BOOTC_BASE_IMAGE}:aws \
@@ -46,18 +49,9 @@ cloudinit:
 		-f images/cloud-init/Containerfile images/cloud-init
 	podman push ${REGISTRY}/${BOOTC_BASE_IMAGE}:aws
 
-	#echo "Overlaying cloud init on fedora bootc image with flightctl agent and microshift"
-	# podman build \
-	#	--arch amd64 \
-	#	-t ${REGISTRY}/${BOOTC_MICROSHIFT_IMAGE}:aws \
-	#	--build-arg base="${REGISTRY}/${BOOTC_MICROSHIFT_IMAGE}:${BOOTC_MICROSHIFT_IMAGE_TAG}" \
-	#	-f images/cloud-init/Containerfile images/cloud-init
-
-	#podman push ${REGISTRY}/${BOOTC_MICROSHIFT_IMAGE}:aws
-
 .PHONY: fido-device
 fido-device:
-	echo "Building fido device"
+	echo "Building fido device image"
 	podman build \
 		--arch amd64 \
 		-t fido-device:latest \
@@ -84,7 +78,7 @@ iso:
 ami:
 	echo "First pulling bootc image down"
 	sudo podman pull ${REGISTRY}/${BOOTC_BASE_IMAGE}:aws
-	sudo podman pull ${REGISTRY}/${BOOTC_MICROSHIFT_IMAGE}:aws
+	export IMAGE_DIGEST=$(podman inspect --format '{{.Digest}}' ${REGISTRY}/${BOOTC_BASE_IMAGE}:aws)
 
 	echo "Making AWS AMI for bootc base image using BiB"
 	sudo podman run \
@@ -99,25 +93,7 @@ ami:
 		quay.io/centos-bootc/bootc-image-builder:latest \
 		--type ami \
 		--rootfs xfs \
-		--aws-ami-name fedora-bootc-base \
-		--aws-bucket bootc-images \
-		--aws-region ap-south-1 \
+		--aws-ami-name ${AMI_NAME} \
+		--aws-bucket ${BUCKET_NAME} \
+		--aws-region ${AWS_REGION} \
 		${REGISTRY}/${BOOTC_BASE_IMAGE}:aws
-
-	#echo "Making AWS AMI for bootc microshift image using BiB"
-	#sudo podman run \
-	#	--rm \
-	#	-it \
-	#	--privileged \
-	#	--pull=newer \
-	#	--security-opt label=type:unconfined_t \
-	#	-v ${HOME}/.aws:/root/.aws:ro \
-	#	-v /var/lib/containers/storage:/var/lib/containers/storage \
-	#	--env AWS_PROFILE=default \
-	#	quay.io/centos-bootc/bootc-image-builder:latest \
-	#	--type ami \
-	#	--rootfs xfs \
-	#	--aws-ami-name fedora-bootc-microshift-ami \
-	#	--aws-bucket bootc-images \
-	#	--aws-region us-west-2 \
-	#	${REGISTRY}/${BOOTC_MICROSHIFT_IMAGE}:aws

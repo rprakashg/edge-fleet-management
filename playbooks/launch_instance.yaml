@@ -27,7 +27,7 @@
       - assign_public_ip: true
       wait: true
       count: "{{ device_count }}"
-      user_data: "{{ lookup('ansible.builtin.template', './templates/user-data.j2') }}"
+      user_data: "{{ lookup('ansible.builtin.template', '{{ user_data_template }}') }}"
       tags:
         Name: "{{ instance_name }}"
     register: ec2_instance
