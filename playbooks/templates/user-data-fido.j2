@@ -10,6 +10,4 @@ users:
 
 runcmd:
 - echo "Welcome to FIDO Device" > /etc/motd
-- mkdir -p /etc/fdo
 - go-fdo-client device-init '{{ manufacturing_server }}' --device-info '{{ instance_name }}' --key ec256 --blob /etc/fdo/cred.bin
-- systemctl enable fido-onboard.service

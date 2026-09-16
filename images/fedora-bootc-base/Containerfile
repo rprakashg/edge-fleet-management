@@ -7,6 +7,8 @@ root-fs-type = "xfs"
 kargs = ["audit=0"]
 EOF
 
+RUN mkdir -p /etc/flightctl
+
 # Add Flight Control agent
 # renovate: datasource=rpm depName=flightctl-agent registryUrl=https://rpm.flightctl.io/fedora/43/x86_64/
 ARG FLIGHTCTL_VERSION=1.0.2
