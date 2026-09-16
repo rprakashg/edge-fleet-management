@@ -7,7 +7,7 @@ BOOTC_BASE_IMAGE_TAG ?= latest
 BOOTC_MICROSHIFT_IMAGE ?= fedora-bootc-microshift
 BOOTC_MICROSHIFT_IMAGE_TAG ?= latest
 EMBED_CONTAINER_IMAGES ?=0
-AMI_NAME ?=bootc-device-base
+AMI_NAME ?=fedora-bootc-base
 BUCKET_NAME ?=bootc-amis-demo
 AWS_REGION ?=ap-south-1
 
@@ -61,6 +61,7 @@ fido-device:
 	echo "Tagging and pushing image to registry"
 	podman tag fido-device:latest ${REGISTRY}/fido-device:latest
 	podman push ${REGISTRY}/fido-device:latest
+	
 .PHONY: iso
 iso:
 	echo "Making iso using BiB - Not Implemented"
