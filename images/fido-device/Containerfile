@@ -16,13 +16,21 @@ RUN cat > /etc/systemd/system/fido-onboard.service <<'EOF'
 [Unit]
 Description=FIDO Device Onboarding
 After=network-online.target cloud-final.service
+ConditionPathExists=!/etc/fdo/onboard.done
 Wants=network-online.target
 Requires=cloud-final.service
 
 [Service]
 Type=oneshot
-ExecStart=/usr/bin/go-fdo-client onboard --default-working-dir /etc/fdo --key ec256 --kex ECDH256 --blob /etc/fdo/cred.bin
 RemainAfterExit=yes
+ExecStart=/usr/bin/go-fdo-client onboard --default-working-dir /etc/fdo --key ec256 --kex ECDH256 --blob /etc/fdo/cred.bin
+ExecStartPost=/bin/touch /etc/fdo/onboard.done
+StandardOutput=journal
+StandardError=journal
+
+TimeoutStartSec=300
+Restart=on-failure
+RestartSec=10
 
 [Install]
 WantedBy=multi-user.target
